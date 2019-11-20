@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[])
 {
-	auto agent = std::make_unique<systelab::trace::TraceAgent>();
+	auto agent = std::make_unique<systelab::trace::TraceAgent>("Channel", "Filename", "FolderPath", 3);
 	agent->enable(true);
 
     return 0;
