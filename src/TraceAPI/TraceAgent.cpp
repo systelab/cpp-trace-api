@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TraceAgent.h"
 
 #include "TraceAgentSinkBackend.h"
