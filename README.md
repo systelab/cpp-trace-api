@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/systelab/cpp-trace-api.svg?branch=master)](https://travis-ci.org/systelab/cpp-trace-api)
-[![Build status](https://ci.appveyor.com/api/projects/status/vl7vvxt33ex4l1bk?svg=true)](https://ci.appveyor.com/project/systelab/cpp-trace-api)
+[![Build status](https://ci.appveyor.com/api/projects/status/h5mevc6dpunulq13?svg=true)](https://ci.appveyor.com/project/systelab/cpp-trace-api)
 [![codecov](https://codecov.io/gh/systelab/cpp-trace-api/branch/master/graph/badge.svg)](https://codecov.io/gh/systelab/cpp-trace-api)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6526d0da00cb4c90ad196782faf09523)](https://www.codacy.com/manual/systelab/cpp-json-settings?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=systelab/cpp-json-settings&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c39bf050b7524110ae9915238c0337d0)](https://www.codacy.com/manual/systelab/cpp-trace-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=systelab/cpp-trace-api&amp;utm_campaign=Badge_Grade)
 [![Download](https://api.bintray.com/packages/systelab/conan/TraceAPI:systelab/images/download.svg)](https://bintray.com/systelab/conan/TraceAPI:systelab/_latestVersion)
 
 
