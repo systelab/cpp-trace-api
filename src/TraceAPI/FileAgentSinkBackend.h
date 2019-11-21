@@ -10,13 +10,13 @@ namespace sinks = boost::log::sinks;
 
 namespace systelab { namespace trace {
 
-	class TraceAgentSinkBackend : public sinks::text_file_backend
+	class FileAgentSinkBackend : public sinks::text_file_backend
 	{
 
 	public:
-		TraceAgentSinkBackend(const boost::filesystem::path& m_logFilepath,
-							  unsigned int maxArchiveFolders);
-		virtual ~TraceAgentSinkBackend() = default;
+		FileAgentSinkBackend(const boost::filesystem::path& m_logFilepath,
+							 unsigned int maxArchiveFolders);
+		virtual ~FileAgentSinkBackend() = default;
 
 		bool isEnabled() const;
 		void setEnabled(bool enabled);

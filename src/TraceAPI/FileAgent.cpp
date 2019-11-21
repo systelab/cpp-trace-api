@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include "TraceAgent.h"
-
-#include "TraceAgentSinkBackend.h"
+#include "FileAgent.h"
 
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -15,32 +13,37 @@ using namespace boost::log;
 
 namespace systelab { namespace trace {
 
-	TraceAgent::TraceAgent(const std::string& channel,
-						   const std::string& baseTraceFilename,
-						   const std::string& tracesFolderPath,
-						   unsigned int nArchivedTraceFiles)
+	FileAgent::FileAgent(const std::string& channel,
+						 const std::string& baseTraceFilename,
+						 const std::string& tracesFolderPath,
+						 unsigned int nArchivedTraceFiles)
 		:m_channel(channel)
 		,m_baseTraceFilename(baseTraceFilename)
 		,m_tracesFolderPath(tracesFolderPath)
 		,m_nArchivedTraceFiles(nArchivedTraceFiles)
 		,m_enabled(false)
 	{
+		if (!boost::filesystem::exists(boost::filesystem::path(tracesFolderPath)))
+		{
+			boost::filesystem::create_directories(tracesFolderPath);
+		}
+
 		m_activeLogFileName = boost::filesystem::path(tracesFolderPath) / boost::filesystem::path(baseTraceFilename + ".log");
 		createSink();
 	}
 
-	TraceAgent::~TraceAgent()
+	FileAgent::~FileAgent()
 	{
 		enable(false);
 		destroySink();
 	}
 
-	bool TraceAgent::isEnabled() const
+	bool FileAgent::isEnabled() const
 	{
 		return m_enabled;
 	}
 
-	void TraceAgent::enable(bool enable)
+	void FileAgent::enable(bool enable)
 	{
 		if (enable && !m_enabled)
 		{
@@ -54,19 +57,24 @@ namespace systelab { namespace trace {
 		m_enabled = enable;
 	}
 
-	void TraceAgent::backup()
+	void FileAgent::flush()
+	{
+		m_logSinkFrontend->flush();
+	}
+
+	void FileAgent::backup()
 	{
 		m_logSinkBackend->backup();
 	}
 
-	void TraceAgent::createSink()
+	void FileAgent::createSink()
 	{
-		m_logSinkBackend = boost::make_shared<TraceAgentSinkBackend>(m_activeLogFileName, m_nArchivedTraceFiles);
+		m_logSinkBackend = boost::make_shared<FileAgentSinkBackend>(m_activeLogFileName, m_nArchivedTraceFiles);
 		m_logSinkFrontend = boost::make_shared<SinkFrontendType>(m_logSinkBackend);
 
 		m_logSinkFrontend->set_formatter(
 			expressions::stream
-			<< expressions::format_date_time< boost::posix_time::ptime >("DateTime", "%Y-%m-%d %H:%M:%S.%f")
+			<< expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
 			<< " ["
 			<< expressions::attr< std::string >("Channel")
 			<< "]> "
@@ -78,7 +86,7 @@ namespace systelab { namespace trace {
 		);
 	}
 
-	void TraceAgent::destroySink()
+	void FileAgent::destroySink()
 	{
 		m_logSinkFrontend.reset();
 	}

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "TraceAgentSinkBackend.h"
+#include "FileAgentSinkBackend.h"
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
@@ -9,8 +9,8 @@
 
 namespace systelab { namespace trace {
 
-	TraceAgentSinkBackend::TraceAgentSinkBackend(const boost::filesystem::path& logFilepath,
-												 unsigned int maxArchiveFolders)
+	FileAgentSinkBackend::FileAgentSinkBackend(const boost::filesystem::path& logFilepath,
+											   unsigned int maxArchiveFolders)
 		:m_logFilepath(logFilepath)
 		,m_backupBasePath(logFilepath.parent_path())
 		,m_maxArchiveFolders(maxArchiveFolders)
@@ -18,18 +18,18 @@ namespace systelab { namespace trace {
 	{
 	}
 
-	bool TraceAgentSinkBackend::isEnabled() const
+	bool FileAgentSinkBackend::isEnabled() const
 	{
 		return m_enabled;
 	}
 
-	void TraceAgentSinkBackend::setEnabled( bool enabled )
+	void FileAgentSinkBackend::setEnabled( bool enabled )
 	{
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 		m_enabled = enabled;
 	}
 
-	void TraceAgentSinkBackend::consume(boost::log::record_view const&, string_type const& message)
+	void FileAgentSinkBackend::consume(boost::log::record_view const&, string_type const& message)
 	{
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 		if (m_enabled)
@@ -44,7 +44,7 @@ namespace systelab { namespace trace {
 		}
 	}
 
-	void TraceAgentSinkBackend::backup()
+	void FileAgentSinkBackend::backup()
 	{
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 
@@ -79,7 +79,7 @@ namespace systelab { namespace trace {
 		removeExcessBackupFolders();
 	}
 
-	void TraceAgentSinkBackend::removeExcessBackupFolders()
+	void FileAgentSinkBackend::removeExcessBackupFolders()
 	{
 		std::vector<boost::filesystem::path> logFolders;
 
