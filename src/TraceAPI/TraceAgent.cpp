@@ -64,13 +64,13 @@ namespace systelab { namespace trace {
 		m_logSinkBackend = boost::make_shared<TraceAgentSinkBackend>(m_activeLogFileName, m_nArchivedTraceFiles);
 		m_logSinkFrontend = boost::make_shared<SinkFrontendType>(m_logSinkBackend);
 
-		//m_logSinkFrontend->set_formatter(
-		//	expressions::stream
-		//	<< expressions::format_date_time< boost::posix_time::ptime >("DateTime", "%Y-%m-%d %H:%M:%S.%f")
-		//	<< " ["
-		//	<< expressions::attr< std::string >("Channel")
-		//	<< "]> "
-		//	<< expressions::smessage);
+		m_logSinkFrontend->set_formatter(
+			expressions::stream
+			<< expressions::format_date_time< boost::posix_time::ptime >("DateTime", "%Y-%m-%d %H:%M:%S.%f")
+			<< " ["
+			<< expressions::attr< std::string >("Channel")
+			<< "]> "
+			<< expressions::smessage);
 
 		m_logSinkFrontend->set_filter(
 			expressions::has_attr< std::string >("Channel") &&
