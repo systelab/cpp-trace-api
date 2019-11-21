@@ -5,13 +5,16 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "TraceAPI/TraceAgent.h"
+#include "TraceAPI/ChannelMacro.h"
+#include "TraceAPI/FileAgent.h"
 
 
 int main(int argc, char *argv[])
 {
-	auto agent = std::make_unique<systelab::trace::TraceAgent>("Channel", "Filename", "FolderPath", 3);
-	agent->enable(true);
+	auto fileAgent = std::make_unique<systelab::trace::FileAgent>("Channel", "Filename", "FolderPath", 3);
+	fileAgent->enable(true);
+	TRACE_CHANNEL("Channel") << "The Conan package has been created successfully!";
+	fileAgent->flush();
 
     return 0;
 }
