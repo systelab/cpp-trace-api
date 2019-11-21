@@ -10,3 +10,7 @@
 // GoogleTest
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+
+// BOOST
+#include <boost/filesystem.hpp>
+
