@@ -95,7 +95,7 @@ script:
         conan test ../test_package/conanfile.py TraceAPI/0.0.${TRAVIS_BUILD_NUMBER}@systelab/stable -s build_type=${CONAN_BUILD_TYPE} -s compiler.libcxx=${COMPILER_LIBCXX};
       fi
     fi
-  - if [[ $TRAVIS_OS_NAME == linux && $BUILD_TYPE == Coverage ]]; then make JSONSettingsTestCoverage; fi
+  - if [[ $TRAVIS_OS_NAME == linux && $BUILD_TYPE == Coverage ]]; then make TraceAPITestCoverage; fi
 
 deploy:
   provider: script
