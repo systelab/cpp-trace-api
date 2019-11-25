@@ -2,6 +2,8 @@
 #include "TraceAPI/ChannelMacro.h"
 #include "TraceAPI/FileAgent.h"
 
+#include <regex>
+
 
 using namespace testing;
 
@@ -20,6 +22,7 @@ namespace systelab { namespace trace { namespace unit_test {
 			m_traceFilepath = boost::filesystem::path(m_tracesFolderPath) / (m_traceFileName + ".log");
 
 			m_fileAgent = std::make_unique<FileAgent>(m_channelName, m_traceFileName, m_tracesFolderPath, m_nArchivedTraceFiles);
+			m_fileAgent->enable(true);
 		}
 
 		void TearDown()
@@ -30,6 +33,69 @@ namespace systelab { namespace trace { namespace unit_test {
 			{
 				boost::filesystem::remove(m_traceFilepath);
 			}
+		}
+
+		std::vector<std::string> readTraceFile()
+		{
+			std::vector<std::string> lines;
+
+			std::ifstream ifs(m_traceFilepath.string());
+			if (ifs)
+			{
+				std::string line;
+				while (std::getline(ifs, line, '\n'))
+				{
+					lines.push_back(line);
+				}
+			}
+
+			return lines;
+		}
+
+		void writeTraceFile(std::vector<std::string> lines)
+		{
+			boost::filesystem::remove(m_traceFilepath);
+
+			std::string fileContents = "";
+			for (auto line : lines)
+			{
+				fileContents += line;
+				fileContents += "\n";
+			}
+
+			std::ofstream fileStream;
+			fileStream.open(m_traceFilepath.string());
+			fileStream << fileContents;
+			fileStream.close();
+		}
+
+		AssertionResult assertTraceLine(const std::string& line,
+										const std::string& expectedChannel,
+										const std::string& expectedMessage)
+		{
+			std::smatch match;
+			std::regex re("[0-9-: .]+(.*)> (.*)", std::regex::extended);
+			if (!std::regex_search(line, match, re) || match.size() != 3)
+			{
+				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
+			}
+
+			std::string channel = match.str(1);
+			std::string expectedChannelBrackets = "[" + expectedChannel + "]";
+			if (channel != expectedChannelBrackets)
+			{
+				return AssertionFailure() << "Different value for the trace line channel: " 
+										  << "actual=" << channel << ", expected=" << expectedChannelBrackets;
+			}
+
+			std::string message = match.str(2);
+			if (message != expectedMessage)
+			{
+				return AssertionFailure() << "Different value for the trace line message: "
+										  << "actual=" << message << ", expected=" << expectedMessage;
+			}
+
+			return AssertionSuccess();
 		}
 
 	protected:
@@ -46,14 +112,60 @@ namespace systelab { namespace trace { namespace unit_test {
 
 	TEST_F(TraceFileContentTest, testAddTraceCreatesFile)
 	{
-		m_fileAgent->enable(true);
-
-		TRACE_CHANNEL(m_channelName) << "Log here" << 123 << "Patata";
-		TRACE_CHANNEL(m_channelName) << "Log here" << 456 << "Patata";
-		TRACE_CHANNEL(m_channelName) << "Log here" << 789 << "Patata";
-
+		TRACE_CHANNEL(m_channelName) << "This is trace line " << 1 << " entry.";
+		TRACE_CHANNEL(m_channelName) << "This is trace line " << 2 << " entry.";
+		TRACE_CHANNEL(m_channelName) << "This is trace line " << 3 << " entry.";
 		m_fileAgent->flush();
 
+		auto traceFileLines = readTraceFile();
+		ASSERT_EQ(3, traceFileLines.size());
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "This is trace line 1 entry.")) << "For line 1";
+		EXPECT_TRUE(assertTraceLine(traceFileLines[1], m_channelName, "This is trace line 2 entry.")) << "For line 2";
+		EXPECT_TRUE(assertTraceLine(traceFileLines[2], m_channelName, "This is trace line 3 entry.")) << "For line 3";
+	}
+
+	TEST_F(TraceFileContentTest, testAddTraceWhenDisabledDoesNotWriteIntoFile)
+	{
+		m_fileAgent->enable(false);
+		TRACE_CHANNEL(m_channelName) << "Trace when file agent is disabled.";
+		m_fileAgent->enable(true);
+		TRACE_CHANNEL(m_channelName) << "Trace when file agent is enabled.";
+		m_fileAgent->enable(false);
+		TRACE_CHANNEL(m_channelName) << "Trace when file agent is disabled again.";
+		m_fileAgent->flush();
+
+		auto traceFileLines = readTraceFile();
+		ASSERT_EQ(1, traceFileLines.size());
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "Trace when file agent is enabled."));
+	}
+
+	TEST_F(TraceFileContentTest, testAddTraceForOtherChannelsDoesNotWriteIntoFile)
+	{
+		TRACE_CHANNEL("OtherChannel") << "Trace for another channel";
+		TRACE_CHANNEL(m_channelName) << "Trace for the channel with a file agent up";
+		TRACE_CHANNEL("OtherChannel2") << "Trace for another channel";
+		m_fileAgent->flush();
+
+		auto traceFileLines = readTraceFile();
+		ASSERT_EQ(1, traceFileLines.size());
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "Trace for the channel with a file agent up"));
+	}
+
+	TEST_F(TraceFileContentTest, testAddTraceAppendsToExistingFile)
+	{
+		writeTraceFile({ "Line1", "Line2", "Line3" });
+
+		TRACE_CHANNEL(m_channelName) << "First trace line added.";
+		TRACE_CHANNEL(m_channelName) << "Second trace line added.";
+		m_fileAgent->flush();
+
+		auto traceFileLines = readTraceFile();
+		ASSERT_EQ(5, traceFileLines.size());
+		EXPECT_EQ("Line1", traceFileLines[0]);
+		EXPECT_EQ("Line2", traceFileLines[1]);
+		EXPECT_EQ("Line3", traceFileLines[2]);
+		EXPECT_TRUE(assertTraceLine(traceFileLines[3], m_channelName, "First trace line added."));
+		EXPECT_TRUE(assertTraceLine(traceFileLines[4], m_channelName, "Second trace line added."));
 	}
 
 }}}
