@@ -79,7 +79,7 @@ namespace systelab { namespace trace { namespace unit_test {
 										const std::string& expectedMessage)
 		{
 			std::smatch match;
-			std::regex re("[0-9-: .]+(.*)> (.*)", std::regex::extended);
+			std::regex re("[0-9: .-]+(.*)> (.*)", std::regex::extended);
 			if (!std::regex_search(line, match, re) || match.size() != 3)
 			{
 				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
