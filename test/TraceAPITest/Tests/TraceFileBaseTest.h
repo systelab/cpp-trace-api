@@ -33,6 +33,11 @@ namespace systelab { namespace trace { namespace unit_test {
 			{
 				boost::filesystem::remove(m_traceFilepath);
 			}
+
+			if (boost::filesystem::exists(boost::filesystem::path(m_tracesFolderPath)))
+			{
+				boost::filesystem::remove_all(boost::filesystem::path(m_tracesFolderPath));
+			}
 		}
 
 		std::vector<std::string> readTraceFile()
