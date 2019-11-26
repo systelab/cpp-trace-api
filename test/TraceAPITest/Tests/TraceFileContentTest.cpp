@@ -38,10 +38,13 @@ namespace systelab { namespace trace { namespace unit_test {
 	TEST_F(TraceFileContentTest, testAddTraceWhenDisabledDoesNotWriteIntoFile)
 	{
 		m_fileAgent->enable(false);
+		EXPECT_FALSE(m_fileAgent->isEnabled());
 		TRACE_CHANNEL(m_channelName) << "Trace when file agent is disabled.";
 		m_fileAgent->enable(true);
+		EXPECT_TRUE(m_fileAgent->isEnabled());
 		TRACE_CHANNEL(m_channelName) << "Trace when file agent is enabled.";
 		m_fileAgent->enable(false);
+		EXPECT_FALSE(m_fileAgent->isEnabled());
 		TRACE_CHANNEL(m_channelName) << "Trace when file agent is disabled again.";
 		m_fileAgent->flush();
 
