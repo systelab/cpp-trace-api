@@ -18,16 +18,7 @@ namespace systelab { namespace trace {
 	{
 	}
 
-	bool FileAgentSinkBackend::isEnabled() const
-	{
-		return m_enabled;
-	}
-
-	void FileAgentSinkBackend::setEnabled( bool enabled )
-	{
-		boost::lock_guard<boost::mutex> guard(m_mutex);
-		m_enabled = enabled;
-	}
+	FileAgentSinkBackend::~FileAgentSinkBackend() = default;
 
 	void FileAgentSinkBackend::consume(boost::log::record_view const&, string_type const& message)
 	{

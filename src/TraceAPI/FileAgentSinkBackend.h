@@ -16,10 +16,7 @@ namespace systelab { namespace trace {
 	public:
 		FileAgentSinkBackend(const boost::filesystem::path& m_logFilepath,
 							 unsigned int maxArchiveFolders);
-		virtual ~FileAgentSinkBackend() = default;
-
-		bool isEnabled() const;
-		void setEnabled(bool enabled);
+		virtual ~FileAgentSinkBackend();
 
 		void consume(boost::log::record_view const& rec, string_type const& command_line);
 		void backup();
