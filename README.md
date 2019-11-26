@@ -117,14 +117,17 @@ std::string channelName = "MyChannel";
 std::string traceFileName = "MyTraceFile";
 std::string tracesFolderPath = "./Subfolder/MyTraces";
 unsigned int nArchivedTraceFiles = 3;
-auto fileAgent = std::make_unique<systelab::trace::FileAgent>(channelName, traceFileName, tracesFolderPath, nArchivedTraceFiles);
+auto fileAgent = std::make_unique<systelab::trace::FileAgent>
+                   (channelName, traceFileName, tracesFolderPath, nArchivedTraceFiles);
 ```
 
 > The agent instance must be kept alive (not destroyed) during the whole application lifecycle. Thus, all traces added when there is no agent instance won't be recorded on the file.
 
 ### Add a trace
 
-Traces can be added using the `TRACE_CHANNEL` macro providing the channel name as an argument and the trace content through the stream (`<<`) operator:
+Traces can be added using the `TRACE_CHANNEL` macro providing:
+* Channel name as an argument
+* Trace content through the stream (`<<`) operator
 
 ```cpp
 #include "TraceAPI/ChannelMacro.h"
@@ -135,7 +138,14 @@ TRACE_CHANNEL("MyChannel") << "This is the trace number " << 1 << " to add";
 It is highly recommended to define your own macros to easily trace to an specific channel:
 
 ```cpp
-TODO
+#define TRACE_MY_CHANNEL() \
+    TRACE_CHANNEL("MyChannel")
+```
+
+Then, traces can be added as follows:
+
+```cpp
+TRACE_MY_CHANNEL() << "Trace added using custom macro.";
 ```
 
 ### Backup
@@ -146,7 +156,9 @@ In order to perform a backup of a traces file, just call the `backup()` method o
 fileAgent->backup();
 ```
 
-That would move the 
+That would move the current traces file into a `Logs_YYYY_MM_DD` subfolder, where `YYYY`, `MM` and `DD` respectively correspond with the year, month and day of the current date. In order to allow archiving of multiple trace files for the same day, a timestamp is appended to trace the filename.
+
+Additionally, old backups are automatically deleted, so only the configured amount of backup folders is kept.
 
 ### Channel disabling
 
