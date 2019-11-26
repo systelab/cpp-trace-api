@@ -9,6 +9,15 @@
 
 This library provides utilities to easily add traces to your application.
 
+## Supported features
+
+* Multiple channels
+* Dump to .log files
+* Dedicated threads
+* Channel enabling/disabling
+* Backup generation
+* Deletion of old backups (rolling basis)
+
 ## Setup
 
 ### Build from sources
@@ -91,7 +100,64 @@ target_link_libraries(${MY_PROJECT} ${CONAN_LIBS})
 
 ## Usage
 
+### Set up a file agent
+
+For each channel of traces to set up, a `systelab::trace::FileAgent` needs to be instantiated. 
+
+The constructor parameters of this class allow defining the configuration of the associated traces file:
+* Channel name
+* Trace filename
+* Trace folder path
+* Maximum number of trace backups 
+
 ```
+#include "TraceAPI/FileAgent.h"
+
+std::string channelName = "MyChannel";
+std::string traceFileName = "MyTraceFile";
+std::string tracesFolderPath = "./Subfolder/MyTraces";
+unsigned int nArchivedTraceFiles = 3;
+auto fileAgent = std::make_unique<systelab::trace::FileAgent>(channelName, traceFileName, tracesFolderPath, nArchivedTraceFiles);
+```
+
+> The agent instance must be kept alive (not destroyed) during the whole application lifecycle. Thus, all traces added when there is no agent instance won't be recorded on the file.
+
+### Add a trace
+
+Traces can be added using the `TRACE_CHANNEL` macro providing the channel name as an argument and the trace content through the stream (`<<`) operator:
+
+```cpp
+#include "TraceAPI/ChannelMacro.h"
+
+TRACE_CHANNEL("MyChannel") << "This is the trace number " << 1 << " to add";
+```
+
+It is highly recommended to define your own macros to easily trace to an specific channel:
+
+```cpp
 TODO
 ```
 
+### Backup
+
+In order to perform a backup of a traces file, just call the `backup()` method of the associated `FileAgent` entity.
+
+```cpp
+fileAgent->backup();
+```
+
+That would move the 
+
+### Channel disabling
+
+A channel can be temporarilly disabled by using the `enable()` method of the associated file agent:
+
+```cpp
+fileAgent->enable(false);
+```
+
+Similarly, the channel can be reenabled as follows:
+
+```cpp
+fileAgent->enable(true);
+```
