@@ -96,6 +96,7 @@ script:
       fi
     fi
   - if [[ $TRAVIS_OS_NAME == linux && $BUILD_TYPE == Coverage ]]; then make TraceAPITestCoverage; fi
+  - cd ..
 
 deploy:
   provider: script
