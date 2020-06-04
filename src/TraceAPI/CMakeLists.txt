@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.2)
 
 # Find external dependencies
-find_package(boost)
+set(BOOST_PACKAGE_NAME boost)
+find_package(${BOOST_PACKAGE_NAME})
+if (NOT TARGET ${BOOST_PACKAGE_NAME}::${BOOST_PACKAGE_NAME})
+    set(BOOST_PACKAGE_NAME Boost)
+    find_package(${BOOST_PACKAGE_NAME})
+endif()
 
 # Add project folder into includes
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -11,7 +16,7 @@ set(TRACE_API_LIBRARY TraceAPI)
 file(GLOB_RECURSE TRACE_API_LIBRARY_SRC "*.cpp")
 file(GLOB_RECURSE TRACE_API_LIBRARY_HDR "*.h")
 add_library(${TRACE_API_LIBRARY} STATIC ${TRACE_API_LIBRARY_SRC} ${TRACE_API_LIBRARY_HDR})
-target_link_libraries(${TRACE_API_LIBRARY} boost::boost)
+target_link_libraries(${TRACE_API_LIBRARY} ${BOOST_PACKAGE_NAME}::${BOOST_PACKAGE_NAME})
 
 #Configure source groups
 foreach(FILE ${TRACE_API_LIBRARY_SRC} ${TRACE_API_LIBRARY_HDR}) 
