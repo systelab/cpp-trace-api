@@ -16,5 +16,5 @@ jobs:
         library-name: 'TraceAPI'
         tag-name: 'v1.0.3'
         configuration-name: 'VisualStudio.2019.x64.Debug'
-        ci-system: 'Appveyor'
+        ci-system: 'AppVeyor'
         job-id: '5p6jv5cra0lubap8'
