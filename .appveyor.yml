@@ -6,6 +6,9 @@ init:
         Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))"
       }
 
+environment:
+  CYG_ROOT: C:\cygwin64
+
 configuration:
   - Debug
   - Release
@@ -66,3 +69,4 @@ deploy_script:
       } else {
         echo "Not uploading because this is not a tag build"
       }
+  - '%CYG_ROOT%/bin/bash -lc "cd $APPVEYOR_BUILD_FOLDER; ./build_docs.sh"'
