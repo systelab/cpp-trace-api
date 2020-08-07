@@ -8,7 +8,11 @@ jobs:
     - name: 'Generate library documentation'
       id: generate-doc
       uses: systelab/cpp-library-doc-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
+        owner: systelab
+        repo-name: cpp-trace-api
         library-name: 'TraceAPI'
         tag-name: 'v1.0.3'
         configuration-name: 'VisualStudio 2019 x64 Debug'
