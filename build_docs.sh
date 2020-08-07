@@ -24,7 +24,7 @@ function dispatchDocBuildsEvent
 	echo "CONFIGURATION=$CONFIG_NAME"
 	echo "JOB=$JOB_ID\n\n"
 
-	curl -H "Authorization: token :token" \
+	curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" \
 		 -H 'Accept: application/vnd.github.everest-preview+json' \
 		 "https://api.github.com/repos/systelab/cpp-trace-api/dispatches" \
 		 -d '{"event_type": "doc-build", "client_payload": {"tag": "$TAG_NAME", "configuration": "$CONFIG_NAME", "ci": "$CI_NAME", "job": "$JOB_ID"}}'
@@ -38,7 +38,7 @@ if [[ -z $APPVEYOR_REPO_TAG_NAME ]]
 then
 	echo
 	echo "Not dispatching build docs event because this is not a tag build"
-	exit 1
+	exit 0
 fi
 
 dispatchDocBuildsEvent
