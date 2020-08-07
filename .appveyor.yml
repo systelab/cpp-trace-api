@@ -6,9 +6,6 @@ init:
         Update-AppveyorBuild -Version "$($env:APPVEYOR_REPO_TAG_NAME.TrimStart("v"))"
       }
 
-environment:
-  CYG_ROOT: C:\cygwin64
-
 configuration:
   - Debug
   - Release
@@ -16,6 +13,7 @@ configuration:
 environment:
   global:
     PYTHON: "C:\\Python36"
+    CYG_ROOT: C:\cygwin64
 
   matrix:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
