@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  generate_doc_job:
+    runs-on: ubuntu-latest
+    name: 'Automated generation of library documentation'
+    steps:
+    - name: 'Generate library documentation'
+      id: generate-doc
+      uses: systelab/cpp-library-doc-action
+      with:
+        library-name: 'TraceAPI'
+        tag-name: 'v1.0.3'
+        configuration-name: 'VisualStudio 2019 x64 Debug'
+        ci-system: 'Appveyor'
+        job-id: 123456
