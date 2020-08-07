@@ -1,12 +1,14 @@
-on: [push]
+on:
+  repository_dispatch:
+    types: [doc-build]
 
 jobs:
-  generate_doc_job:
+  build_docs_job:
     runs-on: ubuntu-latest
     name: 'Automated generation of library documentation'
     steps:
     - name: 'Generate library documentation'
-      id: generate-doc
+      id: archive-doc
       uses: systelab/cpp-library-doc-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -14,7 +16,7 @@ jobs:
         owner: systelab
         repo-name: cpp-trace-api
         library-name: 'TraceAPI'
-        tag-name: 'v1.0.3'
-        configuration-name: 'VisualStudio.2019.x64.Debug'
-        ci-system: 'AppVeyor'
-        job-id: '5p6jv5cra0lubap8'
+        tag-name: ${{ github.event.client_payload.tag }}
+        configuration-name: ${{ github.event.client_payload.configuration }}
+        ci-system: ${{ github.event.client_payload.ci }}
+        job-id: ${{ github.event.client_payload.job }}
