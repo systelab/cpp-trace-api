@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: 'Generate library documentation'
       id: generate-doc
-      uses: systelab/cpp-library-doc-action
+      uses: systelab/cpp-library-doc-action@master
       with:
         library-name: 'TraceAPI'
         tag-name: 'v1.0.3'
