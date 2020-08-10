@@ -15,7 +15,7 @@ function dispatchDocBuildsEvent
 {
 	TAG_NAME=$APPVEYOR_REPO_TAG_NAME
 	CI_NAME="AppVeyor"
-	CONFIG_NAME="$APPVEYOR_BUILD_WORKER_IMAGE $PLATFORM $CONFIGURATION"
+	CONFIG_NAME=$APPVEYOR_BUILD_WORKER_IMAGE + " " + $PLATFORM + " " + $CONFIGURATION
 	JOB_ID=$APPVEYOR_JOB_ID
 
 	echo "Dispatch GitHub Action to build documentation..."	
