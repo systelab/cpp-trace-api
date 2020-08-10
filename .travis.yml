@@ -109,12 +109,17 @@ script:
   - cd ..
 
 deploy:
-  provider: script
-  script: bash ./deploy.sh -v "${TRAVIS_TAG:1}"
-  skip_cleanup: true
-  on:
-    tags: true
-    condition: "$BUILD_TYPE != Coverage"
+  - provider: script
+    script: bash ./deploy.sh -v "${TRAVIS_TAG:1}"
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: "$BUILD_TYPE != Coverage"
+  - provider: script
+    script: bash ./build_docs.sh -t "${TRAVIS_TAG}" -c "Travis" -n "${COMPILER} ${BUILD_TYPE}" -j "${TRAVIS_JOB_ID}"
+    skip_cleanup: true
+    on:
+      tags: true
 
 after_success:
   - if [[ $TRAVIS_OS_NAME == linux && $BUILD_TYPE == Coverage ]]; then bash <(curl -s https://codecov.io/bash); fi
