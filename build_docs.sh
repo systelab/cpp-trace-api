@@ -27,7 +27,7 @@ function dispatchDocBuildsEvent
 	curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" \
 		 -H 'Accept: application/vnd.github.everest-preview+json' \
 		 "https://api.github.com/repos/systelab/cpp-trace-api/dispatches" \
-		 -d '{"event_type": "doc-build", "client_payload": {"tag": "$TAG_NAME", "configuration": "$CONFIG_NAME", "ci": "$CI_NAME", "job": "$JOB_ID"}}'
+		 -d '{"event_type": "doc-build", "client_payload": {"tag": "${TAG_NAME}", "configuration": "${CONFIG_NAME}", "ci": "${CI_NAME}", "job": "${JOB_ID}"}}'
 	checkErrors
 	echo "Done.\n"
 }
