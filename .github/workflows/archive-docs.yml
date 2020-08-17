@@ -14,9 +14,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         owner: systelab
-        repo-name: cpp-trace-api
-        library-name: 'TraceAPI'
-        tag-name: ${{ github.event.client_payload.tag }}
-        configuration-name: ${{ github.event.client_payload.configuration }}
-        ci-system: ${{ github.event.client_payload.ci }}
-        job-id: ${{ github.event.client_payload.job }}
+        repo_name: cpp-trace-api
+        library_name: 'C++ Trace API library'
+        tag_name: ${{ github.event.client_payload.tag }}
+        configuration_name: ${{ github.event.client_payload.configuration }}
+        ci_system: ${{ github.event.client_payload.ci }}
+        job_id: ${{ github.event.client_payload.job }}
