@@ -88,7 +88,7 @@ script:
   - make
   - cd bin
   - if [ $TRAVIS_OS_NAME == osx ]; then cp -f *.dylib /usr/local/lib; fi
-  - ./TraceAPITest
+  - ./TraceAPITest --gtest_output=xml:TraceAPITest.xml
   - cd ..
   - cd test
   - cd TraceAPITest
@@ -120,7 +120,7 @@ deploy:
       tags: true
       condition: "$BUILD_TYPE != Coverage"
   - provider: script
-    script: bash ./build_docs.sh -t "${TRAVIS_TAG}" -c "Travis" -n "${COMPILER_NAME} ${BUILD_TYPE}" -j "${TRAVIS_JOB_ID}"
+    script: bash ./build_docs.sh -o "systelab" -s "cpp-trace-api" -t "${TRAVIS_TAG}" -c "Travis" -n "${COMPILER_NAME} ${BUILD_TYPE}" -j "${TRAVIS_JOB_ID}" -p "TraceAPITest"
     skip_cleanup: true
     on:
       tags: true
