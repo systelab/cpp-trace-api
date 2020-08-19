@@ -132,8 +132,10 @@ function findTestProjectConfiguration
 function queryGitHubReleaseInternalId
 {
 	echo "Querying for GitHub Release internal identifier..."
-
-	GITHUB_RELEASE_JSON=$(curl --silent "https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/tags/$TAG_NAME")
+	GITHUB_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/tags/$TAG_NAME"
+	echo "URL: $GITHUB_RELEASE_URL"
+	
+	GITHUB_RELEASE_JSON=$(curl --silent "$GITHUB_RELEASE_URL")
 	checkErrors
 	echo "Response: $GITHUB_RELEASE_JSON"
 
@@ -165,25 +167,25 @@ function buildTestProjectsJSON
 	CONFIG_FILE="build_docs.cfg"
 	GITHUB_RELEASE_INTERNAL_ID=""
 
-	TEST_PROJECTS_JSON = "["
+	TEST_PROJECTS_JSON="["
 
 	FIRST_TEST_PROJECT=1
 	for TEST_PROJECT_NAME in $TEST_PROJECTS
 	do
 		if [[ $FIRST_TEST_PROJECT == 0 ]]
 		then
-			TEST_PROJECTS_JSON += ", "
+			TEST_PROJECTS_JSON+= ", "
 		fi
 		FIRST_TEST_PROJECT=0
 
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 		
-		TEST_PROJECTS_JSON += "{ \"id\": \"$TEST_PROJECT_ASSET_ID\", \"type\": \"$TEST_PROJECT_TYPE\" }"
+		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ASSET_ID\", \"type\": \"$TEST_PROJECT_TYPE\" }"
 		
 	done #TEST_PROJECT_NAME
 
-	TEST_PROJECTS_JSON += "]" 
+	TEST_PROJECTS_JSON+="]" 
 }
 
 function dispatchDocBuildsEvent
