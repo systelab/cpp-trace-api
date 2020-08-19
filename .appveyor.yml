@@ -51,7 +51,7 @@ build_script:
 test_script:
   - ps: cd bin
   - ps: cd $env:CONFIGURATION
-  - TraceAPITest.exe --gtest_output=../xml:TraceAPITest.xml
+  - TraceAPITest.exe --gtest_output=xml:../TraceAPITest.xml
 
 after_test:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path ..\TraceAPITest.xml))
