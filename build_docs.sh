@@ -132,7 +132,7 @@ function findTestProjectConfiguration
 function queryGitHubReleaseInternalId
 {
 	echo "Querying for GitHub Release internal identifier..."
-	GITHUB_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/tags/$TAG_NAME"
+	GITHUB_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/releases/tags/$TAG_NAME"
 	echo "URL: $GITHUB_RELEASE_URL"
 	
 	GITHUB_RELEASE_JSON=$(curl --silent "$GITHUB_RELEASE_URL")
