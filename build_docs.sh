@@ -156,12 +156,8 @@ function uploadTestReportToGitHub
 	echo "URL: $GITHUB_ASSET_UPLOAD_URL"
 	echo "Content-Type: $GITHUB_ASSET_CONTENT_TYPE"
 
-	curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" \
-		 -H "Content-Type: $GITHUB_ASSET_CONTENT_TYPE" \
-		 --data-binary @$TEST_PROJECT_REPORT \
-		 $GITHUB_ASSET_UPLOAD_URL
+	TEST_PROJECT_ASSET_ID=$(curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" -H "Content-Type: $GITHUB_ASSET_CONTENT_TYPE" --data-binary @$TEST_PROJECT_REPORT $GITHUB_ASSET_UPLOAD_URL  | grep '"id":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
 	checkErrors
-
 	echo "Report uploaded successfully (asset id=$TEST_PROJECT_ASSET_ID)."
 	echo ""
 }
