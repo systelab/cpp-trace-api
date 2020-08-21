@@ -150,10 +150,18 @@ function uploadTestReportToGitHub
 
 	echo "Uploading test report $TEST_PROJECT_REPORT as an asset of GitHub release...";
 	
-	# TODO
-	TEST_PROJECT_ASSET_ID="TODO"
-	echo "TODO: pending to upload"
-	
+	GITHUB_ASSET_FILENAME="$TEST_PROJECT_NAME-$JOB_ID.xml"
+	GITHUB_ASSET_UPLOAD_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/releases/$GITHUB_RELEASE_INTERNAL_ID/assets?name=$GITHUB_ASSET_FILENAME"
+	GITHUB_ASSET_CONTENT_TYPE=$(file -b --mime-type $TEST_PROJECT_REPORT)
+	echo "URL: $GITHUB_ASSET_UPLOAD_URL"
+	echo "Content-Type: $GITHUB_ASSET_CONTENT_TYPE"
+
+	curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" \
+		 -H "Content-Type: $GITHUB_ASSET_CONTENT_TYPE" \
+		 --data-binary @$TEST_PROJECT_REPORT \
+		 $GITHUB_ASSET_UPLOAD_URL
+	checkErrors
+
 	echo "Report uploaded successfully (asset id=$TEST_PROJECT_ASSET_ID)."
 	echo ""
 }
