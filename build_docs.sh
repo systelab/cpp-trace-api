@@ -138,7 +138,13 @@ function queryGitHubReleaseInternalId
 	RESPONSE=$(curl --silent "$GITHUB_RELEASE_URL")
 	echo "GitHub Response: $RESPONSE"
 	
-	GITHUB_RELEASE_INTERNAL_ID=$(curl --silent "$GITHUB_RELEASE_URL" | jq -r .id)
+	GREP_RESPONSE=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"id":')
+	echo "Grep Response: $GREP_RESPONSE"
+	
+	GREP_RESPONSE2=$(curl --silent "$GITHUB_RELEASE_URL" | grep -Po '"id": "\K.*?(?=")')
+	echo "Grep Response2: $GREP_RESPONSE2"	
+	
+	GITHUB_RELEASE_INTERNAL_ID=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"id":' | sed -E 's/.*"([^"]+)".*/\1/')
 	checkErrors
 	echo "Release internal identifier is $GITHUB_RELEASE_INTERNAL_ID"
 	echo ""
