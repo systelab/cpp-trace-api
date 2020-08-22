@@ -134,8 +134,11 @@ function queryGitHubReleaseInternalId
 	echo "Querying for GitHub Release internal identifier..."
 	GITHUB_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/releases/tags/$TAG_NAME"
 	echo "URL: $GITHUB_RELEASE_URL"
+
+	BEFORE_SED=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"\"id\":[0-9]+"' | head -1)
+	echo "Before awk: $BEFORE_SED"
 	
-	GITHUB_RELEASE_INTERNAL_ID=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"id":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+	GITHUB_RELEASE_INTERNAL_ID=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"\"id\":[0-9]+"' | head -1 | awk -F\: '{print $2}')
 	checkErrors
 	echo "Release internal identifier is $GITHUB_RELEASE_INTERNAL_ID"
 	echo ""
