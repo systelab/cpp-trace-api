@@ -185,7 +185,7 @@ function buildTestProjectsJSON
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 		
-		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ASSET_ID\", \"type\": \"$TEST_PROJECT_TYPE\" }"
+		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ASSET_ID\", \"name\": \"$TEST_PROJECT_NAME\", \"type\": \"$TEST_PROJECT_TYPE\" }"
 		
 	done #TEST_PROJECT_NAME
 
