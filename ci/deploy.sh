@@ -39,7 +39,5 @@ function parseParameters
 parseParameters "${@}"
 
 echo -e "\nUploading TraceAPI/$VERSION@systelab/stable to systelab-bintray...\n\n"
-conan user
-conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan
 conan upload "TraceAPI/$VERSION@systelab/stable" --all -r systelab-bintray --force
 checkErrors
