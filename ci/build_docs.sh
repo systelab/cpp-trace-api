@@ -161,7 +161,7 @@ function uploadTestReportToGitHub
 	echo "Report uploaded successfully."
 
 	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE | sed 's/\,/,\r\n/' | grep '{"url":' | sed -r 's/\{\"url\":\s*\"(.*)\",/\1/')
-	TEST_PROJECT_ASSET_ID=${TEST_PROJECT_ASSET_URL##*/}
+	TEST_PROJECT_ASSET_ID="${TEST_PROJECT_ASSET_URL##*/}"
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
 	echo "Report asset id is $TEST_PROJECT_ASSET_ID"
 	echo ""
