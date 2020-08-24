@@ -185,12 +185,12 @@ function buildTestProjectsJSON
 
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
-		
-		TEST_PROJECT_ID="$TEST_PROJECT_ASSET_ID"
-		echo "Test project id is $TEST_PROJECT_ID"
-		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ID\", \"name\": \"$TEST_PROJECT_NAME\", \"type\": \"$TEST_PROJECT_TYPE\" }"
-		echo "TEST_PROJECTS_JSON is $TEST_PROJECTS_JSON"
-		
+
+		CURRENT_PROJECT_JSON="{ \"id\": $TEST_PROJECT_ASSET_ID, \"name\": \"$TEST_PROJECT_NAME\", \"type\": \"$TEST_PROJECT_TYPE\" }"
+		echo "Current project JSON is $CURRENT_PROJECT_JSON"
+		TEST_PROJECTS_JSON+="$CURRENT_PROJECT_JSON"
+		echo "Last project JSON is $TEST_PROJECTS_JSON"
+
 	done #TEST_PROJECT_NAME
 
 	TEST_PROJECTS_JSON+="]" 
@@ -231,7 +231,6 @@ function dispatchDocBuildsEvent
 	echo "TEST_PROJECTS=$TEST_PROJECTS"
 	echo ""
 	
-	TEST_PROJECTS_JSON=""
 	buildTestProjectsJSON
 
 	BODY_CONTENT="{\"event_type\": \"doc-build\", \"client_payload\": {\"tag\": \"$TAG_NAME\", \"configuration\": \"$CONFIG_NAME\", \"ci\": \"$CI_NAME\", \"job\": \"$JOB_ID\", \"tests\": $TEST_PROJECTS_JSON}}"
