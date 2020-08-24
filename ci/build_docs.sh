@@ -169,8 +169,9 @@ function uploadTestReportToGitHub
 	echo "Report asset id is $TEST_PROJECT_ASSET_ID"
 	echo ""
 	
-	MY_PROJECT_JSON="{ \"id\": \""$TEST_PROJECT_ASSET_ID"\", \"name\": \""$TEST_PROJECT_NAME"\", \"type\": \""$TEST_PROJECT_TYPE"\" }"
-	echo "My JSON is $MY_PROJECT_JSON"
+	echo "My JSON is..."
+	printf '{"id":"%s","name":"%s","type":"%s"}\n' "$TEST_PROJECT_ASSET_ID" "$TEST_PROJECT_NAME" "$TEST_PROJECT_TYPE"
+	echo "After My JSON"
 }
 
 function buildTestProjectsJSON
@@ -189,13 +190,12 @@ function buildTestProjectsJSON
 		fi
 		FIRST_TEST_PROJECT=0
 
-		TEST_PROJECT_ASSET_ID=""
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 
-		CURRENT_PROJECT_JSON="{ \"id\": \""$TEST_PROJECT_ASSET_ID"\", \"name\": \""$TEST_PROJECT_NAME"\", \"type\": \""$TEST_PROJECT_TYPE"\" }"
-		echo "Current project JSON is $CURRENT_PROJECT_JSON"
-		TEST_PROJECTS_JSON+="$CURRENT_PROJECT_JSON"
+		TEST_PROJECT_JSON=$(printf '{"id":"%s","name":"%s","type":"%s"}\n' "$TEST_PROJECT_ASSET_ID" "$TEST_PROJECT_NAME" "$TEST_PROJECT_TYPE")
+		echo "Current project JSON is $TEST_PROJECT_JSON"
+		TEST_PROJECTS_JSON+="$TEST_PROJECT_JSON"
 		echo "Last project JSON is $TEST_PROJECTS_JSON"
 
 	done #TEST_PROJECT_NAME
