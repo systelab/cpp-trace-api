@@ -186,8 +186,9 @@ function buildTestProjectsJSON
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 		
-		echo "ASSET id is $TEST_PROJECT_ASSET_ID"
-		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ASSET_ID\", \"name\": \"$TEST_PROJECT_NAME\", \"type\": \"$TEST_PROJECT_TYPE\" }"
+		TEST_PROJECT_ID="$TEST_PROJECT_ASSET_ID"
+		echo "Test project id is $TEST_PROJECT_ID"
+		TEST_PROJECTS_JSON+="{ \"id\": \"$TEST_PROJECT_ID\", \"name\": \"$TEST_PROJECT_NAME\", \"type\": \"$TEST_PROJECT_TYPE\" }"
 		echo "TEST_PROJECTS_JSON is $TEST_PROJECTS_JSON"
 		
 	done #TEST_PROJECT_NAME
