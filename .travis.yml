@@ -114,13 +114,13 @@ script:
 
 deploy:
   - provider: script
-    script: bash ./deploy.sh -v "${TRAVIS_TAG:1}"
+    script: bash ./ci/deploy.sh -v "${TRAVIS_TAG:1}"
     skip_cleanup: true
     on:
       tags: true
       condition: "$BUILD_TYPE != Coverage"
   - provider: script
-    script: bash ./build_docs.sh -o "systelab" -s "cpp-trace-api" -t "${TRAVIS_TAG}" -c "Travis" -n "${COMPILER_NAME} ${BUILD_TYPE}" -j "${TRAVIS_JOB_ID}" -p "TraceAPITest"
+    script: bash ./ci/build_docs.sh -o "systelab" -s "cpp-trace-api" -t "${TRAVIS_TAG}" -c "Travis" -n "${COMPILER_NAME} ${BUILD_TYPE}" -j "${TRAVIS_JOB_ID}" -p "TraceAPITest"
     skip_cleanup: true
     on:
       tags: true
