@@ -232,9 +232,8 @@ function dispatchDocBuildsEvent
 	echo ""
 	
 	buildTestProjectsJSON
-
 	BODY_CONTENT="{\"event_type\": \"doc-build\", \"client_payload\": {\"tag\": \"$TAG_NAME\", \"configuration\": \"$CONFIG_NAME\", \"ci\": \"$CI_NAME\", \"job\": \"$JOB_ID\", \"tests\": $TEST_PROJECTS_JSON}}"
-	echo "BODY_CONTENT=$BODY_CONTENT"
+	echo "BODY_CONTENT is $BODY_CONTENT"
 	echo ""
 
 	curl -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" \
