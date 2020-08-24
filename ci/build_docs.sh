@@ -164,10 +164,13 @@ function uploadTestReportToGitHub
 	checkErrors
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
 
-	GITHUB_ASSET_IDENTIFIER=$(echo $TEST_PROJECT_ASSET_URL | sed 's#/#\r\n#g' | tail -1)
+	TEST_PROJECT_ASSET_ID=$(echo $TEST_PROJECT_ASSET_URL | sed 's#/#\r\n#g' | tail -1)
 	checkErrors
 	echo "Report asset id is $TEST_PROJECT_ASSET_ID"
 	echo ""
+	
+	MY_PROJECT_JSON="{ \"id\": \""$TEST_PROJECT_ASSET_ID"\", \"name\": \""$TEST_PROJECT_NAME"\", \"type\": \""$TEST_PROJECT_TYPE"\" }"
+	echo "My JSON is $MY_PROJECT_JSON"
 }
 
 function buildTestProjectsJSON
@@ -186,10 +189,11 @@ function buildTestProjectsJSON
 		fi
 		FIRST_TEST_PROJECT=0
 
+		TEST_PROJECT_ASSET_ID=""
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 
-		CURRENT_PROJECT_JSON="{ \"id\": \""$GITHUB_ASSET_IDENTIFIER"\", \"name\": \""$TEST_PROJECT_NAME"\", \"type\": \""$TEST_PROJECT_TYPE"\" }"
+		CURRENT_PROJECT_JSON="{ \"id\": \""$TEST_PROJECT_ASSET_ID"\", \"name\": \""$TEST_PROJECT_NAME"\", \"type\": \""$TEST_PROJECT_TYPE"\" }"
 		echo "Current project JSON is $CURRENT_PROJECT_JSON"
 		TEST_PROJECTS_JSON+="$CURRENT_PROJECT_JSON"
 		echo "Last project JSON is $TEST_PROJECTS_JSON"
