@@ -197,7 +197,7 @@ function buildTestProjectsJSON
 		echo "Current JSON(1) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"id\":"
 		echo "Current JSON(2) is $TEST_PROJECT_JSON"
-		TEST_PROJECT_JSON+="\"123456\","
+		TEST_PROJECT_JSON+="\"$TEST_PROJECT_ASSET_ID\","
 		echo "Current JSON(3) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"name\":"
 		echo "Current JSON(4) is $TEST_PROJECT_JSON"
