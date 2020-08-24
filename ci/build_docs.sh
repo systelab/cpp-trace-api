@@ -193,8 +193,23 @@ function buildTestProjectsJSON
 		findTestProjectConfiguration
 		uploadTestReportToGitHub
 
-		TEST_PROJECT_JSON=$(printf '{"id":"%s","name":"%s","type":"%s"}\n' "$TEST_PROJECT_ASSET_ID" "$TEST_PROJECT_NAME" "$TEST_PROJECT_TYPE")
-		echo "Current project JSON is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON="{"
+		echo "Current JSON(1) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"id\":"
+		echo "Current JSON(2) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"123456\","
+		echo "Current JSON(3) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"name\":"
+		echo "Current JSON(4) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"$TEST_PROJECT_NAME\","
+		echo "Current JSON(5) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"type\":"
+		echo "Current JSON(6) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="\"$TEST_PROJECT_TYPE\""
+		echo "Current JSON(7) is $TEST_PROJECT_JSON"
+		TEST_PROJECT_JSON+="}"
+		echo "Current JSON(8) is $TEST_PROJECT_JSON"		
+
 		TEST_PROJECTS_JSON+="$TEST_PROJECT_JSON"
 		echo "Last project JSON is $TEST_PROJECTS_JSON"
 
