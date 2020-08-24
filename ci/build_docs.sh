@@ -164,12 +164,7 @@ function uploadTestReportToGitHub
 	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE_MULTILINE | head -1 | sed -r 's/\{\"url\":\s*\"(.*)\"/\1/g')
 	checkErrors
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
-
-	# TEST_PROJECT_ASSET_ID="$(echo $TEST_PROJECT_ASSET_URL | sed 's#/#\r\n#g' | tail -1)"
-	# checkErrors
-	# printf '{"id":"%s","name":"%s","type":"%s"}\n' "$TEST_PROJECT_ASSET_ID" "$TEST_PROJECT_NAME" "$TEST_PROJECT_TYPE"
-	# echo "Report asset id is $TEST_PROJECT_ASSET_ID"
-	# echo ""
+	echo ""
 }
 
 function buildTestProjectsJSON
@@ -192,24 +187,15 @@ function buildTestProjectsJSON
 		uploadTestReportToGitHub
 
 		TEST_PROJECT_JSON="{"
-		echo "Current JSON(1) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"url\":"
-		echo "Current JSON(2) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"${TEST_PROJECT_ASSET_URL}\","
-		echo "Current JSON(3) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"name\":"
-		echo "Current JSON(4) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"$TEST_PROJECT_NAME\","
-		echo "Current JSON(5) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"type\":"
-		echo "Current JSON(6) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"$TEST_PROJECT_TYPE\""
-		echo "Current JSON(7) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="}"
-		echo "Current JSON(8) is $TEST_PROJECT_JSON"		
 
 		TEST_PROJECTS_JSON+="$TEST_PROJECT_JSON"
-		echo "Last project JSON is $TEST_PROJECTS_JSON"
 
 	done #TEST_PROJECT_NAME
 
