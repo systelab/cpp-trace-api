@@ -164,7 +164,7 @@ function uploadTestReportToGitHub
 	checkErrors
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
 
-	TEST_PROJECT_ASSET_ID=$(echo $TEST_PROJECT_ASSET_URL | sed 's#/#\r\n#g' | tail -1)
+	TEST_PROJECT_ASSET_ID="$(echo $TEST_PROJECT_ASSET_URL | sed 's#/#\r\n#g' | tail -1)"
 	checkErrors
 	echo "Report asset id is $TEST_PROJECT_ASSET_ID"
 	echo ""
@@ -197,7 +197,7 @@ function buildTestProjectsJSON
 		echo "Current JSON(1) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"id\":"
 		echo "Current JSON(2) is $TEST_PROJECT_JSON"
-		TEST_PROJECT_JSON+="\"$TEST_PROJECT_ASSET_ID\","
+		TEST_PROJECT_JSON+="\"${TEST_PROJECT_ASSET_ID}\","
 		echo "Current JSON(3) is $TEST_PROJECT_JSON"
 		TEST_PROJECT_JSON+="\"name\":"
 		echo "Current JSON(4) is $TEST_PROJECT_JSON"
