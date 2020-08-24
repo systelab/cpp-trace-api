@@ -160,7 +160,8 @@ function uploadTestReportToGitHub
 	checkErrors
 	echo "Report uploaded successfully."
 
-	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE | sed 's/\,/,\r\n/' | grep '{"url":' | sed -r 's/\{\"url\":\s*\"(.*)\",/\1/')
+	GITHUB_ASSET_UPLOAD_RESPONSE_MULTILINE=(${GITHUB_ASSET_UPLOAD_RESPONSE//,/ })
+	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE_MULTILINE | head -1 | sed -r 's/\{\"url\":\s*\"(.*)\"/\1/g')
 	checkErrors
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
 
