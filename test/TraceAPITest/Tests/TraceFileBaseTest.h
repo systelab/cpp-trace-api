@@ -82,18 +82,49 @@ namespace systelab { namespace trace { namespace unit_test {
 		}
 
 		AssertionResult assertTraceLine(const std::string& line,
-										const std::string& expectedSeverity,
 										const std::string& expectedMessage)
 		{
 			std::smatch match;
-			std::regex re("([0-9: .-]+)[ ](.*)> (.*)", std::regex::extended);
+			std::regex re("(.*)> (.*)", std::regex::ECMAScript);
 			if (!std::regex_search(line, match, re) || match.size() != 3)
 			{
 				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
 			}
 
 			std::string timestamp = match.str(1);
-			// TODO: Validate timestamp
+			if (!isTimestampFormatValid(timestamp))
+			{
+				return AssertionFailure() << "The trace line timestamp does not satisfy the expected pattern: "
+					<< "actual=" << timestamp << ", expectedPattern=YYYY-MM-DD HH:MM:SS.dddddd (UTC+/-XX:YY)";
+			}
+
+			std::string message = match.str(2);
+			if (message != expectedMessage)
+			{
+				return AssertionFailure() << "Different value for the trace line message: "
+					<< "actual=" << message << ", expected=" << expectedMessage;
+			}
+
+			return AssertionSuccess();
+		}
+
+		AssertionResult assertTraceLineSeverity(const std::string& line,
+												const std::string& expectedSeverity,
+												const std::string& expectedMessage)
+		{
+			std::smatch match;
+			std::regex re("(.*) ([\\[].*[\\]])> (.*)", std::regex::ECMAScript);
+			if (!std::regex_search(line, match, re) || match.size() != 4)
+			{
+				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
+			}
+
+			std::string timestamp = match.str(1);
+			if (!isTimestampFormatValid(timestamp))
+			{
+				return AssertionFailure() << "The trace line timestamp does not satisfy the expected pattern: "
+										  << "actual=" << timestamp << ", expectedPattern=YYYY-MM-DD HH:MM:SS.dddddd (UTC+/-XX:YY)";
+			}
 
 			std::string severity = match.str(2);
 			std::string expectedSeverityBrackets = "[" + expectedSeverity + "]";
@@ -111,6 +142,14 @@ namespace systelab { namespace trace { namespace unit_test {
 			}
 
 			return AssertionSuccess();
+		}
+
+		bool isTimestampFormatValid(const std::string& timestamp)
+		{
+			std::smatch match;
+			std::regex re("^[0-9]{4}-[0-1][0-9]-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{6} \\(UTC[+-][0-1][0-9]:[0-5][0-9]\\)$", std::regex::ECMAScript);
+			return std::regex_search(timestamp, match, re);
+
 		}
 
 	protected:
