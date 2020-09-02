@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TraceAPI/ChannelMacro.h"
+#include "TraceAPI/Configuration.h"
 #include "TraceAPI/FileAgent.h"
 
 #include <regex>
@@ -14,14 +15,20 @@ namespace systelab { namespace trace { namespace unit_test {
 	public:
 		void SetUp()
 		{
-			m_channelName = "MyChannel";
-			m_traceFileName = "MyTraceFile";
-			m_tracesFolderPath = "./Subfolder/MyTraces";
-			m_nArchivedTraceFiles = 3;
+			m_channelName = "MyTraceFile";
+			m_baseFolderPath = "./Subfolder/MyTraces";
+			m_rotationFoldersPrefix = "RotationPrefix";
+			m_maxRotationDays = 3;
 
-			m_traceFilepath = boost::filesystem::path(m_tracesFolderPath) / (m_traceFileName + ".log");
+			m_traceFilepath = boost::filesystem::path(m_baseFolderPath) / (m_channelName + ".log");
 
-			m_fileAgent = std::make_unique<FileAgent>(m_channelName, m_traceFileName, m_tracesFolderPath, m_nArchivedTraceFiles);
+			auto configuration = std::make_unique<Configuration>();
+			configuration->setChannelName(m_channelName);
+			configuration->setBaseFolderPath(m_baseFolderPath);
+			configuration->setRotationFoldersPrefix(m_rotationFoldersPrefix);
+			configuration->setMaxRotationDays(m_maxRotationDays);
+
+			m_fileAgent = std::make_unique<FileAgent>(std::move(configuration));
 			m_fileAgent->enable(true);
 		}
 
@@ -34,9 +41,9 @@ namespace systelab { namespace trace { namespace unit_test {
 				boost::filesystem::remove(m_traceFilepath);
 			}
 
-			if (boost::filesystem::exists(boost::filesystem::path(m_tracesFolderPath)))
+			if (boost::filesystem::exists(boost::filesystem::path(m_baseFolderPath)))
 			{
-				boost::filesystem::remove_all(boost::filesystem::path(m_tracesFolderPath));
+				boost::filesystem::remove_all(boost::filesystem::path(m_baseFolderPath));
 			}
 		}
 
@@ -75,25 +82,28 @@ namespace systelab { namespace trace { namespace unit_test {
 		}
 
 		AssertionResult assertTraceLine(const std::string& line,
-										const std::string& expectedChannel,
+										const std::string& expectedSeverity,
 										const std::string& expectedMessage)
 		{
 			std::smatch match;
-			std::regex re("[0-9: .-]+(.*)> (.*)", std::regex::extended);
+			std::regex re("([0-9: .-]+)[ ](.*)> (.*)", std::regex::extended);
 			if (!std::regex_search(line, match, re) || match.size() != 3)
 			{
 				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
 			}
 
-			std::string channel = match.str(1);
-			std::string expectedChannelBrackets = "[" + expectedChannel + "]";
-			if (channel != expectedChannelBrackets)
+			std::string timestamp = match.str(1);
+			// TODO: Validate timestamp
+
+			std::string severity = match.str(2);
+			std::string expectedSeverityBrackets = "[" + expectedSeverity + "]";
+			if (severity != expectedSeverityBrackets)
 			{
-				return AssertionFailure() << "Different value for the trace line channel: " 
-										  << "actual=" << channel << ", expected=" << expectedChannelBrackets;
+				return AssertionFailure() << "Different value for the trace line severity: " 
+										  << "actual=" << severity << ", expected=" << expectedSeverityBrackets;
 			}
 
-			std::string message = match.str(2);
+			std::string message = match.str(3);
 			if (message != expectedMessage)
 			{
 				return AssertionFailure() << "Different value for the trace line message: "
@@ -107,9 +117,9 @@ namespace systelab { namespace trace { namespace unit_test {
 		std::unique_ptr<FileAgent> m_fileAgent;
 
 		std::string m_channelName;
-		std::string m_traceFileName;
-		std::string m_tracesFolderPath;
-		unsigned int m_nArchivedTraceFiles;
+		std::string m_baseFolderPath;
+		std::string m_rotationFoldersPrefix;
+		unsigned int m_maxRotationDays;
 
 		boost::filesystem::path m_traceFilepath;
 	};
