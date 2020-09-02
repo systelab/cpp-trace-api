@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 
 #include <boost/log/sources/channel_logger.hpp>
 #include <boost/log/common.hpp>
