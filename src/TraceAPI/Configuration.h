@@ -13,22 +13,22 @@ namespace systelab { namespace trace {
 		Configuration(const Configuration&);
 		virtual ~Configuration();
 
-		std::string getTracesFolderPath() const;
-		std::string getBaseTraceFilename() const;
-		std::vector<std::string> getAcceptedChannels() const;
+		std::string getChannelName() const;
+		std::string getBaseFolderPath() const;
+		std::string getRotationFoldersPrefix() const;
 		unsigned int getMaxRotationDays() const;
 
-		void setTracesFolderPath(const std::string&);
-		void setBaseTraceFilename(const std::string&);
-		void setAcceptedChannels(const std::vector<std::string>&);
+		void setChannelName(const std::string&);
+		void setBaseFolderPath(const std::string&);
+		void setRotationFoldersPrefix(const std::string&);
 		void setMaxRotationDays(unsigned int);
 
 		virtual Configuration& operator= (const Configuration&);
 
 	private:
-		std::string m_tracesFolderPath;
-		std::string m_baseTraceFilename;
-		std::vector<std::string> m_acceptedChannels;
+		std::string m_channelName;
+		std::string m_baseFolderPath;
+		std::string m_rotationFoldersPrefix;
 		unsigned int m_maxRotationDays;
 	};
 

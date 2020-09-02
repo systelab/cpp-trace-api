@@ -5,36 +5,36 @@
 namespace systelab { namespace trace {
 
 	Configuration::Configuration()
-		: m_tracesFolderPath("")
-		, m_baseTraceFilename("")
-		, m_acceptedChannels({})
+		: m_channelName("Log")
+		, m_baseFolderPath(".")
+		, m_rotationFoldersPrefix("Logs")
 		, m_maxRotationDays(5)
 	{
 	}
 
 	Configuration::Configuration(const Configuration& other)
-		: m_tracesFolderPath(other.m_tracesFolderPath)
-		, m_baseTraceFilename(other.m_baseTraceFilename)
-		, m_acceptedChannels(other.m_acceptedChannels)
+		: m_channelName(other.m_channelName)
+		, m_baseFolderPath(other.m_baseFolderPath)
+		, m_rotationFoldersPrefix(other.m_rotationFoldersPrefix)
 		, m_maxRotationDays(other.m_maxRotationDays)
 	{
 	}
 
 	Configuration::~Configuration() = default;
 
-	std::string Configuration::getTracesFolderPath() const
+	std::string Configuration::getChannelName() const
 	{
-		return m_tracesFolderPath;
+		return m_channelName;
 	}
 
-	std::string Configuration::getBaseTraceFilename() const
+	std::string Configuration::getBaseFolderPath() const
 	{
-		return m_baseTraceFilename;
+		return m_baseFolderPath;
 	}
 
-	std::vector<std::string> Configuration::getAcceptedChannels() const
+	std::string Configuration::getRotationFoldersPrefix() const
 	{
-		return m_acceptedChannels;
+		return m_rotationFoldersPrefix;
 	}
 
 	unsigned int Configuration::getMaxRotationDays() const
@@ -42,19 +42,19 @@ namespace systelab { namespace trace {
 		return m_maxRotationDays;
 	}
 
-	void Configuration::setTracesFolderPath(const std::string& tracesFolderPath)
+	void Configuration::setChannelName(const std::string& channelName)
 	{
-		m_tracesFolderPath = tracesFolderPath;
+		m_channelName = channelName;
 	}
 
-	void Configuration::setBaseTraceFilename(const std::string& baseTraceFilename)
+	void Configuration::setBaseFolderPath(const std::string& baseFolderPath)
 	{
-		m_baseTraceFilename = baseTraceFilename;
+		m_baseFolderPath = baseFolderPath;
 	}
 
-	void Configuration::setAcceptedChannels(const std::vector<std::string>& acceptedChannels)
+	void Configuration::setRotationFoldersPrefix(const std::string& rotationFoldersPrefix)
 	{
-		m_acceptedChannels = acceptedChannels;
+		m_rotationFoldersPrefix = rotationFoldersPrefix;
 	}
 
 	void Configuration::setMaxRotationDays(unsigned int maxRotationDays)
@@ -64,9 +64,9 @@ namespace systelab { namespace trace {
 
 	Configuration& Configuration::operator= (const Configuration& other)
 	{
-		m_tracesFolderPath = other.m_tracesFolderPath;
-		m_baseTraceFilename = other.m_baseTraceFilename;
-		m_acceptedChannels = other.m_acceptedChannels;
+		m_channelName = other.m_channelName;
+		m_baseFolderPath = other.m_baseFolderPath;
+		m_rotationFoldersPrefix = other.m_rotationFoldersPrefix;
 		m_maxRotationDays = other.m_maxRotationDays;
 
 		return *this;
