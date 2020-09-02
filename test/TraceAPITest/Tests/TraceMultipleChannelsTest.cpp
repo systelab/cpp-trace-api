@@ -14,10 +14,15 @@ namespace systelab { namespace trace { namespace unit_test {
 			TraceFileBaseTest::SetUp();
 
 			m_secondChannelName = "SecondChannel";
-			m_secondTraceFileName = "SecondTraceFile";
-			m_secondTraceFilepath = boost::filesystem::path(m_tracesFolderPath) / (m_secondTraceFileName + ".log");
+			m_secondTraceFilepath = boost::filesystem::path(m_baseFolderPath) / (m_secondChannelName + ".log");
 
-			m_secondFileAgent = std::make_unique<FileAgent>(m_secondChannelName, m_secondTraceFileName, m_tracesFolderPath, m_nArchivedTraceFiles);
+			auto secondConfiguration = std::make_unique<Configuration>();
+			secondConfiguration->setChannelName(m_secondChannelName);
+			secondConfiguration->setBaseFolderPath(m_baseFolderPath);
+			secondConfiguration->setRotationFoldersPrefix(m_rotationFoldersPrefix);
+			secondConfiguration->setMaxRotationDays(m_maxRotationDays);
+
+			m_secondFileAgent = std::make_unique<FileAgent>(std::move(secondConfiguration));
 			m_secondFileAgent->enable(true);
 		}
 
@@ -54,7 +59,6 @@ namespace systelab { namespace trace { namespace unit_test {
 		std::unique_ptr<FileAgent> m_secondFileAgent;
 
 		std::string m_secondChannelName;
-		std::string m_secondTraceFileName;
 		boost::filesystem::path m_secondTraceFilepath;
 	};
 
