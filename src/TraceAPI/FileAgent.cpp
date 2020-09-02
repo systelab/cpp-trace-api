@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FileAgent.h"
 
+#include "Configuration.h"
+
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/keywords/file_name.hpp>
@@ -13,22 +15,18 @@ using namespace boost::log;
 
 namespace systelab { namespace trace {
 
-	FileAgent::FileAgent(const std::string& channel,
-						 const std::string& baseTraceFilename,
-						 const std::string& tracesFolderPath,
-						 unsigned int nArchivedTraceFiles)
-		:m_channel(channel)
-		,m_baseTraceFilename(baseTraceFilename)
-		,m_tracesFolderPath(tracesFolderPath)
-		,m_nArchivedTraceFiles(nArchivedTraceFiles)
+	FileAgent::FileAgent(std::unique_ptr<Configuration> configuration)
+		:m_configuration(std::move(configuration))
 		,m_enabled(false)
 	{
-		if (!boost::filesystem::exists(boost::filesystem::path(tracesFolderPath)))
+		std::string baseFolderPath = m_configuration->getBaseFolderPath();
+		if (!boost::filesystem::exists(boost::filesystem::path(baseFolderPath)))
 		{
-			boost::filesystem::create_directories(tracesFolderPath);
+			boost::filesystem::create_directories(baseFolderPath);
 		}
 
-		m_activeLogFileName = boost::filesystem::path(tracesFolderPath) / boost::filesystem::path(baseTraceFilename + ".log");
+		std::string channelName = m_configuration->getChannelName();
+		m_activeLogFileName = boost::filesystem::path(baseFolderPath) / boost::filesystem::path(channelName + ".log");
 		createSink();
 	}
 
@@ -62,19 +60,19 @@ namespace systelab { namespace trace {
 		m_logSinkFrontend->flush();
 	}
 
-	void FileAgent::backup()
+	void FileAgent::rotate()
 	{
-		m_logSinkBackend->backup();
+		m_logSinkBackend->rotate();
 	}
 
 	void FileAgent::createSink()
 	{
-		m_logSinkBackend = boost::make_shared<FileAgentSinkBackend>(m_activeLogFileName, m_nArchivedTraceFiles);
+		m_logSinkBackend = boost::make_shared<FileAgentSinkBackend>(m_activeLogFileName, *m_configuration);
 		m_logSinkFrontend = boost::make_shared<SinkFrontendType>(m_logSinkBackend);
 
 		m_logSinkFrontend->set_formatter(
 			expressions::stream
-			<< expressions::format_date_time< boost::posix_time::ptime >("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+			<< expressions::format_date_time<boost::local_time::local_date_time>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f %Q")
 			<< " ["
 			<< expressions::attr< std::string >("Channel")
 			<< "]> "
@@ -82,7 +80,7 @@ namespace systelab { namespace trace {
 
 		m_logSinkFrontend->set_filter(
 			expressions::has_attr< std::string >("Channel") &&
-			expressions::attr<std::string>("Channel") == m_channel
+			expressions::attr<std::string>("Channel") == m_configuration->getChannelName()
 		);
 	}
 

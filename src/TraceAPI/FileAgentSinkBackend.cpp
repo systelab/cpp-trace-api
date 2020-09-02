@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "FileAgentSinkBackend.h"
 
+#include "Configuration.h"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread/locks.hpp>
@@ -10,18 +12,25 @@
 namespace systelab { namespace trace {
 
 	FileAgentSinkBackend::FileAgentSinkBackend(const boost::filesystem::path& logFilepath,
-											   unsigned int maxArchiveFolders)
-		:m_logFilepath(logFilepath)
-		,m_backupBasePath(logFilepath.parent_path())
-		,m_maxArchiveFolders(maxArchiveFolders)
-		,m_enabled(true)
+											   const Configuration& configuration)
+		: m_logFilepath(logFilepath)
+		, m_rotationBasePath(logFilepath.parent_path())
+		, m_configuration(configuration)
+		, m_enabled(true)
+		, m_lastRecordTime(boost::none)
 	{
 	}
 
 	FileAgentSinkBackend::~FileAgentSinkBackend() = default;
 
-	void FileAgentSinkBackend::consume(boost::log::record_view const&, string_type const& message)
+	void FileAgentSinkBackend::consume(boost::log::record_view const& record, string_type const& message)
 	{
+		boost::posix_time::ptime currentTime = boost::posix_time::second_clock::local_time();
+		if (m_lastRecordTime && (currentTime.date() > (*m_lastRecordTime).date()))
+		{
+			rotate();
+		}
+
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 		if (m_enabled)
 		{
@@ -32,50 +41,52 @@ namespace systelab { namespace trace {
 				logFileStream << message << std::endl;
 				logFileStream.close();
 			}
+
+			m_lastRecordTime = currentTime;
 		}
 	}
 
-	void FileAgentSinkBackend::backup()
+	void FileAgentSinkBackend::rotate()
 	{
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 
-		// Create the backup folder
-		boost::posix_time::ptime currentTime = boost::posix_time::second_clock::universal_time();
+		// Create the rotation folder
+		boost::posix_time::ptime rotationTime = m_lastRecordTime ? *m_lastRecordTime : boost::posix_time::second_clock::local_time();
 
-		std::stringstream backupFolderStream;
+		std::stringstream rotationFolderStream;
 		boost::posix_time::time_facet *tf = new boost::posix_time::time_facet("%Y_%m_%d");
-		backupFolderStream.imbue(std::locale(backupFolderStream.getloc(), tf));
-		backupFolderStream << "Logs_" << currentTime;
-		std::string backupFolderName = backupFolderStream.str();
-		boost::filesystem::path backupFolder(m_backupBasePath / backupFolderName);
+		rotationFolderStream.imbue(std::locale(rotationFolderStream.getloc(), tf));
+		rotationFolderStream << "Logs_" << rotationTime;
+		std::string rotationFolderName = rotationFolderStream.str();
+		boost::filesystem::path rotationFolder(m_rotationBasePath / rotationFolderName);
 
-		if (!boost::filesystem::exists(backupFolder))
+		if (!boost::filesystem::exists(rotationFolder))
 		{
-			boost::filesystem::create_directory(backupFolder);
+			boost::filesystem::create_directory(rotationFolder);
 		}
 
-		// Construct the backup filename.
-		std::stringstream backupFileStream;
-		backupFileStream << m_logFilepath.stem().string() << "_" << boost::posix_time::to_iso_string(currentTime) << ".log";
-		std::string backupFileName = backupFileStream.str();
-		boost::filesystem::path backupFile(backupFolder / backupFileName);
+		// Construct the rotation filename.
+		std::stringstream rotationFileStream;
+		rotationFileStream << m_logFilepath.stem().string() << "_" << boost::posix_time::to_iso_string(rotationTime) << ".log";
+		std::string rotationFileName = rotationFileStream.str();
+		boost::filesystem::path rotationFile(rotationFolder / rotationFileName);
 
-		// Move log file to backup folder
+		// Move log file to rotation folder
 		if (boost::filesystem::exists(m_logFilepath))
 		{
-			boost::filesystem::rename(m_logFilepath, backupFile);
+			boost::filesystem::rename(m_logFilepath, rotationFile);
 		}
 
-		// Remove excess backup folders
-		removeExcessBackupFolders();
+		// Remove excess rotation folders
+		removeExcessRotationFolders();
 	}
 
-	void FileAgentSinkBackend::removeExcessBackupFolders()
+	void FileAgentSinkBackend::removeExcessRotationFolders()
 	{
-		std::vector<boost::filesystem::path> logFolders;
+		std::vector<boost::filesystem::path> rotationDayFolders;
 
 		boost::filesystem::directory_iterator end_itr;
-		for (boost::filesystem::directory_iterator itr(m_backupBasePath); itr != end_itr; ++itr)
+		for (boost::filesystem::directory_iterator itr(m_rotationBasePath); itr != end_itr; ++itr)
 		{
 			boost::filesystem::path currentPath = itr->path();
 			if (boost::filesystem::is_directory(currentPath))
@@ -84,19 +95,19 @@ namespace systelab { namespace trace {
 				std::regex folderPattern("^Logs_\\d{4}_\\d{2}_\\d{2}$");
 				if (std::regex_search(folderName, folderPattern))
 				{
-					logFolders.push_back(currentPath);
+					rotationDayFolders.push_back(currentPath);
 				}
 			}
 		}
 
-		std::sort(logFolders.rbegin(), logFolders.rend());
+		std::sort(rotationDayFolders.rbegin(), rotationDayFolders.rend());
 
-		size_t nLogFolders = logFolders.size();
-		for (size_t i = 0; i < nLogFolders; i++)
+		size_t nRotationDayFolders = rotationDayFolders.size();
+		for (size_t i = 0; i < nRotationDayFolders; i++)
 		{
-			if (i >= m_maxArchiveFolders)
+			if (i >= m_configuration.getMaxRotationDays())
 			{
-				boost::filesystem::remove_all(logFolders[i]);
+				boost::filesystem::remove_all(rotationDayFolders[i]);
 			}
 		}
 	}

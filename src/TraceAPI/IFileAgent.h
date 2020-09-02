@@ -12,7 +12,7 @@ namespace systelab { namespace trace {
 		virtual void enable(bool) = 0;
 
 		virtual void flush() = 0;
-		virtual void backup() = 0;
+		virtual void rotate() = 0;
 	};
 
 }}
