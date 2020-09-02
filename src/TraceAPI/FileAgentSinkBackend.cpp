@@ -56,7 +56,7 @@ namespace systelab { namespace trace {
 		std::stringstream rotationFolderStream;
 		boost::posix_time::time_facet *tf = new boost::posix_time::time_facet("%Y_%m_%d");
 		rotationFolderStream.imbue(std::locale(rotationFolderStream.getloc(), tf));
-		rotationFolderStream << "Logs_" << rotationTime;
+		rotationFolderStream << m_configuration.getRotationFoldersPrefix() << "_" << rotationTime;
 		std::string rotationFolderName = rotationFolderStream.str();
 		boost::filesystem::path rotationFolder(m_rotationBasePath / rotationFolderName);
 
@@ -92,7 +92,7 @@ namespace systelab { namespace trace {
 			if (boost::filesystem::is_directory(currentPath))
 			{
 				std::string folderName = currentPath.filename().string();
-				std::regex folderPattern("^Logs_\\d{4}_\\d{2}_\\d{2}$");
+				std::regex folderPattern("^" + m_configuration.getRotationFoldersPrefix() + "_\\d{4}_\\d{2}_\\d{2}$");
 				if (std::regex_search(folderName, folderPattern))
 				{
 					rotationDayFolders.push_back(currentPath);
