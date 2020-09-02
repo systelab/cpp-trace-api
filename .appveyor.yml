@@ -21,7 +21,7 @@ environment:
     platform: x64
     visual_studio: Visual Studio 16 2019
     compiler_toolset: v142
-    boost: 1.71.0
+    boost: 1.72.0
     gtest: 1.10.0
 
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
