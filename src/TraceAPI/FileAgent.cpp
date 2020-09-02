@@ -72,14 +72,20 @@ namespace systelab { namespace trace {
 
 		m_logSinkFrontend->set_formatter(
 			expressions::stream
-			<< expressions::format_date_time<boost::local_time::local_date_time>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f %Q")
-			<< " ["
-			<< expressions::attr< std::string >("Channel")
-			<< "]> "
+			<< expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
+			<< " (UTC" << expressions::attr<std::string>("UTCOffset") << ")"
+			<< expressions::if_(expressions::has_attr<std::string>("Severity"))
+				[
+					// if "ID" is present then put it to the record
+					expressions::stream << " ["
+										<< expressions::attr<std::string>("Severity")
+										<< "]"
+				]
+			<< "> "
 			<< expressions::smessage);
 
 		m_logSinkFrontend->set_filter(
-			expressions::has_attr< std::string >("Channel") &&
+			expressions::has_attr<std::string>("Channel") &&
 			expressions::attr<std::string>("Channel") == m_configuration->getChannelName()
 		);
 	}
