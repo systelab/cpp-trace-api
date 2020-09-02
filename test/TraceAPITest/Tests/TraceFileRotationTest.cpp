@@ -60,7 +60,7 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		auto traceFileLines = readTraceFile();
 		ASSERT_EQ(1, traceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "Line after backup."));
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], "Line after backup."));
 
 		auto subfolders = getRotationSubfolders();
 		ASSERT_EQ(1, subfolders.size());

@@ -23,16 +23,16 @@ namespace systelab { namespace trace { namespace unit_test {
 
 	TEST_F(TraceFileContentTest, testAddTraceCreatesFile)
 	{
-		TRACE_CHANNEL(m_channelName) << "This is trace line " << 1 << " entry.";
-		TRACE_CHANNEL(m_channelName) << "This is trace line " << 2 << " entry.";
-		TRACE_CHANNEL(m_channelName) << "This is trace line " << 3 << " entry.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "INFO") << "This is trace line " << 1 << " entry.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "DEBUG") << "This is trace line " << 2 << " entry.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "ERROR") << "This is trace line " << 3 << " entry.";
 		m_fileAgent->flush();
 
 		auto traceFileLines = readTraceFile();
 		ASSERT_EQ(3, traceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "This is trace line 1 entry.")) << "For line 1";
-		EXPECT_TRUE(assertTraceLine(traceFileLines[1], m_channelName, "This is trace line 2 entry.")) << "For line 2";
-		EXPECT_TRUE(assertTraceLine(traceFileLines[2], m_channelName, "This is trace line 3 entry.")) << "For line 3";
+		EXPECT_TRUE(assertTraceLineSeverity(traceFileLines[0], "INFO",  "This is trace line 1 entry.")) << "For line 1";
+		EXPECT_TRUE(assertTraceLineSeverity(traceFileLines[1], "DEBUG", "This is trace line 2 entry.")) << "For line 2";
+		EXPECT_TRUE(assertTraceLineSeverity(traceFileLines[2], "ERROR", "This is trace line 3 entry.")) << "For line 3";
 	}
 
 	TEST_F(TraceFileContentTest, testAddTraceWhenDisabledDoesNotWriteIntoFile)
@@ -50,7 +50,7 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		auto traceFileLines = readTraceFile();
 		ASSERT_EQ(1, traceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "Trace when file agent is enabled."));
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], "Trace when file agent is enabled."));
 	}
 
 	TEST_F(TraceFileContentTest, testAddTraceForOtherChannelsDoesNotWriteIntoFile)
@@ -62,15 +62,15 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		auto traceFileLines = readTraceFile();
 		ASSERT_EQ(1, traceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(traceFileLines[0], m_channelName, "Trace for the channel with a file agent up"));
+		EXPECT_TRUE(assertTraceLine(traceFileLines[0], "Trace for the channel with a file agent up"));
 	}
 
 	TEST_F(TraceFileContentTest, testAddTraceAppendsToExistingFile)
 	{
 		writeTraceFile({ "Line1", "Line2", "Line3" });
 
-		TRACE_CHANNEL(m_channelName) << "First trace line added.";
-		TRACE_CHANNEL(m_channelName) << "Second trace line added.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "ERROR") << "First trace line added.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "WARNING") << "Second trace line added.";
 		m_fileAgent->flush();
 
 		auto traceFileLines = readTraceFile();
@@ -78,8 +78,8 @@ namespace systelab { namespace trace { namespace unit_test {
 		EXPECT_EQ("Line1", traceFileLines[0]);
 		EXPECT_EQ("Line2", traceFileLines[1]);
 		EXPECT_EQ("Line3", traceFileLines[2]);
-		EXPECT_TRUE(assertTraceLine(traceFileLines[3], m_channelName, "First trace line added."));
-		EXPECT_TRUE(assertTraceLine(traceFileLines[4], m_channelName, "Second trace line added."));
+		EXPECT_TRUE(assertTraceLineSeverity(traceFileLines[3], "ERROR", "First trace line added."));
+		EXPECT_TRUE(assertTraceLineSeverity(traceFileLines[4], "WARNING", "Second trace line added."));
 	}
 
 }}}

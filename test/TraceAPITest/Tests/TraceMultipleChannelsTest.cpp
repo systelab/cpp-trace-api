@@ -75,13 +75,13 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		auto firstTraceFileLines = readTraceFile();
 		ASSERT_EQ(2, firstTraceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(firstTraceFileLines[0], m_channelName, "Trace 1 for first channel.")) << "For line 1";
-		EXPECT_TRUE(assertTraceLine(firstTraceFileLines[1], m_channelName, "Trace 2 for first channel.")) << "For line 2";
+		EXPECT_TRUE(assertTraceLine(firstTraceFileLines[0], "Trace 1 for first channel.")) << "For line 1";
+		EXPECT_TRUE(assertTraceLine(firstTraceFileLines[1], "Trace 2 for first channel.")) << "For line 2";
 
 		auto secondTraceFileLines = readSecondTraceFile();
 		ASSERT_EQ(2, secondTraceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[0], m_secondChannelName, "Trace 1 for second channel.")) << "For line 1";
-		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[1], m_secondChannelName, "Trace 2 for second channel.")) << "For line 2";
+		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[0], "Trace 1 for second channel.")) << "For line 1";
+		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[1], "Trace 2 for second channel.")) << "For line 2";
 	}
 
 	TEST_F(TraceMultipleChannelsTest, testAddTraceWhenOneChannelDisabledOnlyWritesTracesOfOtherChannelIntoFile)
@@ -91,10 +91,10 @@ namespace systelab { namespace trace { namespace unit_test {
 		ASSERT_FALSE(m_fileAgent->isEnabled());
 		ASSERT_TRUE(m_secondFileAgent->isEnabled());
 
-		TRACE_CHANNEL(m_channelName) << "Trace " << 1 << " for first channel.";
-		TRACE_CHANNEL(m_secondChannelName) << "Trace " << 1 << " for second channel.";
-		TRACE_CHANNEL(m_channelName) << "Trace " << 2 << " for first channel.";
-		TRACE_CHANNEL(m_secondChannelName) << "Trace " << 2 << " for second channel.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "INFO") << "Trace " << 1 << " for first channel.";
+		TRACE_CHANNEL_SEVERITY(m_secondChannelName, "INFO") << "Trace " << 1 << " for second channel.";
+		TRACE_CHANNEL_SEVERITY(m_channelName, "ERROR") << "Trace " << 2 << " for first channel.";
+		TRACE_CHANNEL_SEVERITY(m_secondChannelName, "ERROR") << "Trace " << 2 << " for second channel.";
 
 		m_fileAgent->flush();
 		m_secondFileAgent->flush();
@@ -103,8 +103,8 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		auto secondTraceFileLines = readSecondTraceFile();
 		ASSERT_EQ(2, secondTraceFileLines.size());
-		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[0], m_secondChannelName, "Trace 1 for second channel.")) << "For line 1";
-		EXPECT_TRUE(assertTraceLine(secondTraceFileLines[1], m_secondChannelName, "Trace 2 for second channel.")) << "For line 2";
+		EXPECT_TRUE(assertTraceLineSeverity(secondTraceFileLines[0], "INFO", "Trace 1 for second channel.")) << "For line 1";
+		EXPECT_TRUE(assertTraceLineSeverity(secondTraceFileLines[1], "ERROR", "Trace 2 for second channel.")) << "For line 2";
 	}
 
 }}}
