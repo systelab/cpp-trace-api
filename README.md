@@ -14,89 +14,37 @@ This library provides utilities to easily add traces to your application.
 * Multiple channels
 * Dump to .log files
 * Dedicated threads
+* Severity handling
 * Channel enabling/disabling
 * Backup generation
 * Deletion of old backups (rolling basis)
 
+
 ## Setup
-
-### Build from sources
-
-Prerequisites:
-  - [Git](https://git-scm.com/)
-  - [Conan](https://conan.io/)
-  - [CMake](https://cmake.org/)
-  - [Visual Studio](https://visualstudio.microsoft.com/) (only on Windows)
-  - [GCC](https://gcc.gnu.org/) (only on Linux)
-
-Build library with the following steps:
-  1. Clone this repository in a local drive
-  2. Make a build directory (i.e. `build/`)
-  3. Register bintray repository for Systelab libraries on conan
-  4. Install `conan` dependencies in the build directory
-  5. Run `cmake` in the build directory to configure build targets
-  6. Use `Visual Studio` (on Windows) or `make` (on Linux) to build the library
-
-#### Windows
-
-In order to build the application on Windows for the `Release` configuration, run the following commands ($VSINSTALLPATH is the path where Visual Studio has been installed):
-
-``` bash
-> git clone https://github.com/systelab/cpp-trace-api
-> md build && cd build
-> conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan
-> conan install .. -s build_type=Release -s compiler.toolset=v141 -s arch=x86_64
-> cmake .. -G "Visual Studio 15 2017 Win64"
-> "$VSINSTALLPATH/devenv.com" TraceAPI.sln /build "Release" /PROJECT "TraceAPI"
-```
-
-However, if you want to `Debug` the source code, you will need these commands:
-
-``` bash
-> git clone https://github.com/systelab/cpp-trace-api
-> md build && cd build
-> conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan
-> conan install .. -s build_type=Debug -s compiler.toolset=v141 -s arch=x86_64
-> cmake .. -G "Visual Studio 15 2017 Win64"
-> "$VSINSTALLPATH/devenv.com" TraceAPI.sln /build "Debug" /PROJECT "TraceAPI"
-```
-
-#### Linux
-``` bash
-> git clone https://github.com/systelab/cpp-trace-api
-> mkdir build && cd build
-> conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan
-> conan install ..
-> cmake .. -DCMAKE_BUILD_TYPE=[Debug | Coverage | Release]
-> make
-```
 
 ### Download using Conan
 
-  1. Create/update your `conanfile.txt` to add this library as follows:
+This library is designed to be installed by making use of [Conan](https://conan.io/) package manager. So, you just need to add the following requirement into your Conan recipe:
 
-```
-[requires]
-TraceAPI/1.0.0@systelab/stable
-
-[generators]
-cmake
+```python
+def requirements(self):
+   self.requires("TraceAPI/1.0.0@systelab/stable")
 ```
 
-  2. Integrate Conan into CMake by adding the following code into your `CMakeLists.txt`:
+> Version number of this code snipped is set just as an example. Replace it for the desired package to retrieve.
 
-```cmake
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+As this package is not available on the conan-center, you will also need to configure a remote repository before installing dependencies:
+
+```bash
+conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan 
 ```
 
-  3. Link against `${CONAN_LIBS}` when configuring your executables in CMake:
+See Conan [documentation](https://docs.conan.io/en/latest/) for further details on how to integrate this package with your build system.
 
-```cmake
-set(MY_PROJECT MyProject)
-add_executable(${MY_PROJECT} main.cpp)
-target_link_libraries(${MY_PROJECT} ${CONAN_LIBS})
-```
+### Build from sources
+
+See [BUILD.md](BUILD.md) document for details.
+
 
 ## Usage
 
@@ -104,21 +52,23 @@ target_link_libraries(${MY_PROJECT} ${CONAN_LIBS})
 
 For each channel of traces to set up, a `systelab::trace::FileAgent` needs to be instantiated. 
 
-The constructor parameters of this class allow defining the configuration of the associated traces file:
+The constructor parameter of this class requires a configuration object where the trace channel particularities are defined:
 * Channel name
-* Trace filename
-* Trace folder path
-* Maximum number of trace backups 
+* Path of logs base folder
+* Rotation folders prefix
+* Maximum number of rotation folders
+* ...
 
-```
+```cpp
+#include "TraceAPI/Configuration.h"
 #include "TraceAPI/FileAgent.h"
 
-std::string channelName = "MyChannel";
-std::string traceFileName = "MyTraceFile";
-std::string tracesFolderPath = "./Subfolder/MyTraces";
-unsigned int nArchivedTraceFiles = 3;
-auto fileAgent = std::make_unique<systelab::trace::FileAgent>
-                   (channelName, traceFileName, tracesFolderPath, nArchivedTraceFiles);
+auto configuration = std::make_unique<systelab::trace::Configuration>();
+configuration->setChannelName("MyChannel");
+configuration->setBaseFolderPath("./Subfolder/MyTraces");
+configuration->setMaxRotationDays(3);
+			
+auto fileAgent = std::make_unique<systelab::trace::FileAgent>(std::move(configuration));
 ```
 
 > The agent instance must be kept alive (not destroyed) during the whole application lifecycle. Thus, all traces added when there is no agent instance won't be recorded on the file.
@@ -148,17 +98,35 @@ Then, traces can be added as follows:
 TRACE_MY_CHANNEL() << "Trace added using custom macro.";
 ```
 
-### Backup
+### Traces with severity
 
-In order to perform a backup of a traces file, just call the `backup()` method of the associated `FileAgent` entity.
+The library is also prepared to record a severity value for each trace added. The `` macro is designed for that purpose:
 
 ```cpp
-fileAgent->backup();
+#include "TraceAPI/ChannelMacro.h"
+
+TRACE_CHANNEL_SEVERITY("MyChannel", "INFO") << "This is an informational trace";
+TRACE_CHANNEL_SEVERITY("MyChannel", "WARNING") << "This is a warning trace";
+TRACE_CHANNEL_SEVERITY("MyChannel", "ERROR") << "This an error trace";
+```
+
+### Rotation
+
+Trace files are automatically rotated at midnight. However, if you want to force a log file rotation, just call the `rotate()` method of the associated `FileAgent` entity.
+
+```cpp
+fileAgent->rotate();
 ```
 
 That would move the current traces file into a `Logs_YYYY_MM_DD` subfolder, where `YYYY`, `MM` and `DD` respectively correspond with the year, month and day of the current date. In order to allow archiving of multiple trace files for the same day, a timestamp is appended to trace the filename.
 
-Additionally, old backups are automatically deleted, so only the configured amount of backup folders is kept.
+Additionally, old backups are automatically deleted, so only the configured amount of rotation days folders is kept.
+
+Prefix of rotation folders can be customized by means of the `setRotationFoldersPrefix` of the configuration object (by default, it is set to `Logs`):
+
+```cpp
+configuration->setRotationFoldersPrefix("MyPrefix");
+```
 
 ### Channel disabling
 
