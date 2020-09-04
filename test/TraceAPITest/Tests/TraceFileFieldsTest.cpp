@@ -63,5 +63,21 @@ namespace systelab { namespace trace { namespace unit_test {
 		EXPECT_TRUE(assertTraceLineSeverityTag(traceFileLines[2], "ERROR", "TAG3", "This is line 3 of severity-tag traces."));
 	}
 
+	TEST_F(TraceFileFieldsTest, testAddMixedTraceTypes)
+	{
+		TRACE_CHANNEL             (m_channelName)                 << "This is a trace line without fields.";
+		TRACE_CHANNEL_SEVERITY    (m_channelName, "ERROR")        << "This is a trace line only with severity.";
+		TRACE_CHANNEL_TAG         (m_channelName, "MY_TAG")       << "This is a trace line only with tag.";
+		TRACE_CHANNEL_SEVERITY_TAG(m_channelName, "INFO", "INIT") << "This is a trace line with severity and tag.";
+		m_fileAgent->flush();
+
+		auto traceFileLines = readTraceFile();
+		ASSERT_EQ(4, traceFileLines.size());
+		EXPECT_TRUE(assertTraceLine           (traceFileLines[0],                 "This is a trace line without fields."));
+		EXPECT_TRUE(assertTraceLineSeverity   (traceFileLines[1], "ERROR",        "This is a trace line only with severity."));
+		EXPECT_TRUE(assertTraceLineTag        (traceFileLines[2], "MY_TAG",       "This is a trace line only with tag."));
+		EXPECT_TRUE(assertTraceLineSeverityTag(traceFileLines[3], "INFO", "INIT", "This is a trace line with severity and tag."));
+	}
+
 }}}
 
