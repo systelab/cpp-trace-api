@@ -74,11 +74,20 @@ namespace systelab { namespace trace {
 			expressions::stream
 			<< expressions::format_date_time<boost::posix_time::ptime>("TimeStamp", "%Y-%m-%d %H:%M:%S.%f")
 			<< " (UTC" << expressions::attr<std::string>("UTCOffset") << ")"
+			<< expressions::if_(expressions::has_attr<std::string>("Severity") || expressions::has_attr<std::string>("Tag"))
+				[
+					expressions::stream << " "
+				]
 			<< expressions::if_(expressions::has_attr<std::string>("Severity"))
 				[
-					// if "ID" is present then put it to the record
-					expressions::stream << " ["
+					expressions::stream << "["
 										<< expressions::attr<std::string>("Severity")
+										<< "]"
+				]
+			<< expressions::if_(expressions::has_attr<std::string>("Tag"))
+				[
+					expressions::stream << "["
+										<< expressions::attr<std::string>("Tag")
 										<< "]"
 				]
 			<< "> "

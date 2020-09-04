@@ -16,13 +16,11 @@ namespace systelab { namespace trace {
 		Channel(const std::string& channelName);
 		virtual ~Channel();
 
-		boost::log::sources::channel_logger<std::string>& getLogger();
-		boost::log::sources::channel_logger<std::string>& getSeverityLogger(const std::string& severity);
+		boost::log::sources::channel_logger<std::string>& getLogger(const std::string& severity, const std::string& tag);
 
 	protected:
 		std::string m_channelName;
-		boost::log::sources::channel_logger<std::string> m_logger;
-		std::map<std::string, boost::log::sources::channel_logger<std::string>> m_severityLoggers;
+		std::map<std::string, boost::log::sources::channel_logger<std::string>> m_loggersMap; // Map key: Serverity<>Tag
 	};
 
 }}
