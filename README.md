@@ -14,7 +14,7 @@ This library provides utilities to easily add traces to your application.
 * Multiple channels
 * Dump to .log files
 * Dedicated threads
-* Severity handling
+* Built-in fields
 * Channel enabling/disabling
 * Backup generation
 * Deletion of old backups (rolling basis)
@@ -98,16 +98,18 @@ Then, traces can be added as follows:
 TRACE_MY_CHANNEL() << "Trace added using custom macro.";
 ```
 
-### Traces with severity
+### Built-in fields
 
-The library is also prepared to record a severity value for each trace added. The `` macro is designed for that purpose:
+The library is also prepared to record the severity and a tag value for each trace added.
+
+As the usage of these fields is optional, the library provides specific macros designed for that purpose:
 
 ```cpp
 #include "TraceAPI/ChannelMacro.h"
 
-TRACE_CHANNEL_SEVERITY("MyChannel", "INFO") << "This is an informational trace";
-TRACE_CHANNEL_SEVERITY("MyChannel", "WARNING") << "This is a warning trace";
-TRACE_CHANNEL_SEVERITY("MyChannel", "ERROR") << "This an error trace";
+TRACE_CHANNEL_SEVERITY("MyChannel", "INFO") << "This is a trace with 'INFO' severity";
+TRACE_CHANNEL_TAG("MyChannel", "MY_TAG") << "This is a trace with 'MY_TAG' tag";
+TRACE_CHANNEL_SEVERITY_TAG("MyChannel", "ERROR", "TAG2") << "This a trace with 'ERROR' severity and 'TAG2' tag";
 ```
 
 ### Rotation
