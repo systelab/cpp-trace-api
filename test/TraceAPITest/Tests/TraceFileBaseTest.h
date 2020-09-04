@@ -115,6 +115,21 @@ namespace systelab { namespace trace { namespace unit_test {
 			return assertTraceLineWithFields(line, { {"severity", expectedSeverity} }, expectedMessage);
 		}
 
+		AssertionResult assertTraceLineTag(const std::string& line,
+										   const std::string& expectedTag,
+										   const std::string& expectedMessage)
+		{
+			return assertTraceLineWithFields(line, { {"tag", expectedTag} }, expectedMessage);
+		}
+
+		AssertionResult assertTraceLineSeverityTag(const std::string& line,
+												   const std::string& expectedSeverity,
+												   const std::string& expectedTag,
+												   const std::string& expectedMessage)
+		{
+			return assertTraceLineWithFields(line, { {"severity", expectedSeverity}, {"tag", expectedTag} }, expectedMessage);
+		}
+
 		AssertionResult assertTraceLineWithFields(const std::string& line,
 												  const std::map<std::string, std::string>& expectedFields,
 												  const std::string& expectedMessage)
