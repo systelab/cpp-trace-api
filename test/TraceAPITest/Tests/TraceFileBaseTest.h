@@ -134,10 +134,18 @@ namespace systelab { namespace trace { namespace unit_test {
 												  const std::map<std::string, std::string>& expectedFields,
 												  const std::string& expectedMessage)
 		{
+			std::string regexStr = "([^\\[]*)"; // Timestamp group
+			regexStr += (expectedFields.size() > 0) ? " " : ""; // Fields separator
+			for (auto expectedField : expectedFields)
+			{
+				regexStr += "(\\[[^\\]]*\\])"; // Field group
+			}
+			regexStr += "> (.*)"; // Message group
+
 			std::smatch match;
 			unsigned int expectedMatchSize = 3 + (unsigned int) expectedFields.size();
-			std::regex re("(.*) ([\\[].*[\\]])*> (.*)", std::regex::ECMAScript);
-			if (!std::regex_search(line, match, re) && match.size() == expectedMatchSize)
+			std::regex re(regexStr, std::regex::ECMAScript);
+			if (!std::regex_search(line, match, re) || match.size() != expectedMatchSize)
 			{
 				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
 			}
