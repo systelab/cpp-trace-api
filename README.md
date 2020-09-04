@@ -109,7 +109,7 @@ As the usage of these fields is optional, the library provides specific macros d
 
 TRACE_CHANNEL_SEVERITY("MyChannel", "INFO") << "This is a trace with 'INFO' severity";
 TRACE_CHANNEL_TAG("MyChannel", "MY_TAG") << "This is a trace with 'MY_TAG' tag";
-TRACE_CHANNEL_SEVERITY_TAG("MyChannel", "ERROR", "TAG2") << "This a trace with 'ERROR' severity and 'TAG2' tag";
+TRACE_CHANNEL_SEVERITY_TAG("MyChannel", "ERROR", "TAG2") << "An error trace with 'TAG2' tag";
 ```
 
 ### Rotation
