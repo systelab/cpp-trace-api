@@ -50,6 +50,11 @@ namespace systelab { namespace trace {
 	{
 		boost::lock_guard<boost::mutex> guard(m_mutex);
 
+		if (!boost::filesystem::exists(m_logFilepath))
+		{
+			return;
+		}
+
 		// Create the rotation folder
 		boost::posix_time::ptime rotationTime = m_lastRecordTime ? *m_lastRecordTime : boost::posix_time::second_clock::local_time();
 
@@ -72,10 +77,7 @@ namespace systelab { namespace trace {
 		boost::filesystem::path rotationFile(rotationFolder / rotationFileName);
 
 		// Move log file to rotation folder
-		if (boost::filesystem::exists(m_logFilepath))
-		{
-			boost::filesystem::rename(m_logFilepath, rotationFile);
-		}
+		boost::filesystem::rename(m_logFilepath, rotationFile);
 
 		// Remove excess rotation folders
 		removeExcessRotationFolders();
