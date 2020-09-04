@@ -112,9 +112,17 @@ namespace systelab { namespace trace { namespace unit_test {
 												const std::string& expectedSeverity,
 												const std::string& expectedMessage)
 		{
+			return assertTraceLineWithFields(line, { {"severity", expectedSeverity} }, expectedMessage);
+		}
+
+		AssertionResult assertTraceLineWithFields(const std::string& line,
+												  const std::map<std::string, std::string>& expectedFields,
+												  const std::string& expectedMessage)
+		{
 			std::smatch match;
-			std::regex re("(.*) ([\\[].*[\\]])> (.*)", std::regex::ECMAScript);
-			if (!std::regex_search(line, match, re) || match.size() != 4)
+			unsigned int expectedMatchSize = 3 + (unsigned int) expectedFields.size();
+			std::regex re("(.*) ([\\[].*[\\]])*> (.*)", std::regex::ECMAScript);
+			if (!std::regex_search(line, match, re) && match.size() == expectedMatchSize)
 			{
 				return AssertionFailure() << "The trace line does not satisfy the expected pattern";
 			}
@@ -126,15 +134,21 @@ namespace systelab { namespace trace { namespace unit_test {
 										  << "actual=" << timestamp << ", expectedPattern=YYYY-MM-DD HH:MM:SS.dddddd (UTC+/-XX:YY)";
 			}
 
-			std::string severity = match.str(2);
-			std::string expectedSeverityBrackets = "[" + expectedSeverity + "]";
-			if (severity != expectedSeverityBrackets)
+			unsigned int fieldIndex = 0;
+			for (auto expectedField : expectedFields)
 			{
-				return AssertionFailure() << "Different value for the trace line severity: " 
-										  << "actual=" << severity << ", expected=" << expectedSeverityBrackets;
+				std::string fieldValue = match.str(2 + fieldIndex);
+				std::string expectedFieldValueBrackets = "[" + expectedField.second + "]";
+				if (fieldValue != expectedFieldValueBrackets)
+				{
+					return AssertionFailure() << "Different value for the trace line " + expectedField.first + ": "
+											  << "actual=" << fieldValue << ", expected=" << expectedFieldValueBrackets;
+				}
+
+				fieldIndex++;
 			}
 
-			std::string message = match.str(3);
+			std::string message = match.str(expectedMatchSize - 1);
 			if (message != expectedMessage)
 			{
 				return AssertionFailure() << "Different value for the trace line message: "
