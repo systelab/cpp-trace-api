@@ -16,6 +16,7 @@ This library provides utilities to easily add traces to your application.
 * Dedicated threads
 * Built-in fields
 * Channel enabling/disabling
+* Severity filtering
 * Backup generation
 * Deletion of old backups (rolling basis)
 
@@ -143,3 +144,16 @@ Similarly, the channel can be reenabled as follows:
 ```cpp
 fileAgent->enable(true);
 ```
+
+### Severity filtering
+
+This library allows defining which severity levels will be logged on the trace files. These severities are set using the `setSeverityFilter()` method of the configuration object:
+
+```cpp
+std::vector<std::string> severityFilter = {"ERROR", "WARNING"};
+configuration->setSeverityFilter(severityFilter);
+```
+
+> By default (when no filter is configured), traces for any severity level are added to files.
+
+
