@@ -17,18 +17,13 @@ namespace systelab { namespace trace { namespace unit_test {
 		{
 			m_channelName = "MyTraceFile";
 			m_baseFolderPath = "./Subfolder/MyTraces";
+			m_severityFilter = {};
 			m_rotationFoldersPrefix = "RotationPrefix";
 			m_maxRotationDays = 3;
 
 			m_traceFilepath = boost::filesystem::path(m_baseFolderPath) / (m_channelName + ".log");
 
-			auto configuration = std::make_unique<Configuration>();
-			configuration->setChannelName(m_channelName);
-			configuration->setBaseFolderPath(m_baseFolderPath);
-			configuration->setRotationFoldersPrefix(m_rotationFoldersPrefix);
-			configuration->setMaxRotationDays(m_maxRotationDays);
-
-			m_fileAgent = std::make_unique<FileAgent>(std::move(configuration));
+			m_fileAgent = std::make_unique<FileAgent>(buildConfiguration());
 			m_fileAgent->enable(true);
 		}
 
@@ -45,6 +40,18 @@ namespace systelab { namespace trace { namespace unit_test {
 			{
 				boost::filesystem::remove_all(boost::filesystem::path(m_baseFolderPath));
 			}
+		}
+
+		std::unique_ptr<Configuration> buildConfiguration()
+		{
+			auto configuration = std::make_unique<Configuration>();
+			configuration->setChannelName(m_channelName);
+			configuration->setBaseFolderPath(m_baseFolderPath);
+			configuration->setSeverityFilter(m_severityFilter);
+			configuration->setRotationFoldersPrefix(m_rotationFoldersPrefix);
+			configuration->setMaxRotationDays(m_maxRotationDays);
+
+			return configuration;
 		}
 
 		std::vector<std::string> readTraceFile()
@@ -194,6 +201,7 @@ namespace systelab { namespace trace { namespace unit_test {
 
 		std::string m_channelName;
 		std::string m_baseFolderPath;
+		std::vector<std::string> m_severityFilter;
 		std::string m_rotationFoldersPrefix;
 		unsigned int m_maxRotationDays;
 
