@@ -9,6 +9,7 @@
 #include <boost/log/support/date_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/date_time/time_clock.hpp>
+#include <boost/phoenix/bind.hpp>
 
 
 using namespace boost::log;
@@ -93,15 +94,47 @@ namespace systelab { namespace trace {
 			<< "> "
 			<< expressions::smessage);
 
-		m_logSinkFrontend->set_filter(
-			expressions::has_attr<std::string>("Channel") &&
-			expressions::attr<std::string>("Channel") == m_configuration->getChannelName()
-		);
+		m_logSinkFrontend->set_filter(boost::phoenix::bind(&FileAgent::filterRecord, this, channel_attr.or_none(), severity_attr.or_none()));
 	}
 
 	void FileAgent::destroySink()
 	{
 		m_logSinkFrontend.reset();
+	}
+
+	bool FileAgent::filterRecord(const boost::log::value_ref<std::string, tag::channel_attr>& channel,
+								 const boost::log::value_ref<std::string, tag::severity_attr>& severity)
+	{
+		if (channel != m_configuration->getChannelName())
+		{
+			return false;
+		}
+
+		if (!filterRecordBySeverity(severity))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	bool FileAgent::filterRecordBySeverity(const boost::log::value_ref<std::string, tag::severity_attr>& severity)
+	{
+		auto severityFilter = m_configuration->getSeverityFilter();
+		if (severityFilter.size() == 0)
+		{
+			return true;
+		}
+
+		for (auto acceptedSeverity : severityFilter)
+		{
+			if (severity == acceptedSeverity)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }}

@@ -9,6 +9,10 @@
 
 namespace bl = boost::log;
 
+BOOST_LOG_ATTRIBUTE_KEYWORD(channel_attr, "Channel", std::string)
+BOOST_LOG_ATTRIBUTE_KEYWORD(severity_attr, "Severity", std::string)
+BOOST_LOG_ATTRIBUTE_KEYWORD(tag_attr, "Tag", std::string)
+
 namespace systelab { namespace trace {
 
 	class Configuration;
@@ -28,6 +32,10 @@ namespace systelab { namespace trace {
 	private:
 		void createSink();
 		void destroySink();
+
+		bool filterRecord(const bl::value_ref<std::string, tag::channel_attr>&,
+						  const bl::value_ref<std::string, tag::severity_attr>&);
+		bool filterRecordBySeverity(const bl::value_ref<std::string, tag::severity_attr>&);
 
 	private:
 		std::unique_ptr<Configuration> m_configuration;
