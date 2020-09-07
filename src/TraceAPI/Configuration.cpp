@@ -7,6 +7,7 @@ namespace systelab { namespace trace {
 	Configuration::Configuration()
 		: m_channelName("Log")
 		, m_baseFolderPath(".")
+		, m_severityFilter()
 		, m_rotationFoldersPrefix("Logs")
 		, m_maxRotationDays(5)
 	{
@@ -15,6 +16,7 @@ namespace systelab { namespace trace {
 	Configuration::Configuration(const Configuration& other)
 		: m_channelName(other.m_channelName)
 		, m_baseFolderPath(other.m_baseFolderPath)
+		, m_severityFilter(other.m_severityFilter)
 		, m_rotationFoldersPrefix(other.m_rotationFoldersPrefix)
 		, m_maxRotationDays(other.m_maxRotationDays)
 	{
@@ -30,6 +32,11 @@ namespace systelab { namespace trace {
 	std::string Configuration::getBaseFolderPath() const
 	{
 		return m_baseFolderPath;
+	}
+
+	std::vector<std::string> Configuration::getSeverityFilter() const
+	{
+		return m_severityFilter;
 	}
 
 	std::string Configuration::getRotationFoldersPrefix() const
@@ -52,6 +59,11 @@ namespace systelab { namespace trace {
 		m_baseFolderPath = baseFolderPath;
 	}
 
+	void Configuration::setSeverityFilter(const std::vector<std::string>& severityFilter)
+	{
+		m_severityFilter = severityFilter;
+	}
+
 	void Configuration::setRotationFoldersPrefix(const std::string& rotationFoldersPrefix)
 	{
 		m_rotationFoldersPrefix = rotationFoldersPrefix;
@@ -66,6 +78,7 @@ namespace systelab { namespace trace {
 	{
 		m_channelName = other.m_channelName;
 		m_baseFolderPath = other.m_baseFolderPath;
+		m_severityFilter = other.m_severityFilter;
 		m_rotationFoldersPrefix = other.m_rotationFoldersPrefix;
 		m_maxRotationDays = other.m_maxRotationDays;
 
