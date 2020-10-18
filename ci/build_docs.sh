@@ -169,7 +169,7 @@ function uploadTestReportToGitHub
 
 function buildTestProjectsJSON
 {
-	CONFIG_FILE="build_docs.cfg"
+	CONFIG_FILE="ci/build_docs.cfg"
 	GITHUB_RELEASE_INTERNAL_ID=""
 
 	TEST_PROJECTS_JSON="["
