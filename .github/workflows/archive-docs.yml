@@ -15,7 +15,7 @@ jobs:
       with:
         owner: systelab
         repo_name: cpp-trace-api
-        library_name: 'C++ Trace API library'
+        library_name: 'TraceAPI CSW library'
         tag_name: ${{ github.event.client_payload.tag }}
         configuration_name: ${{ github.event.client_payload.configuration }}
         ci_system: ${{ github.event.client_payload.ci }}
