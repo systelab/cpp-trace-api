@@ -1,5 +1,12 @@
 # Summary of changes
 
+## Changes for version 1.3.1 (18 Oct 2020)
+
+### Bug Fixes
+
+- Generated automatically release notes and changelog report using GitHub Actions
+
+
 ## Changes for version 1.3.0 (7 Sep 2020)
 
 ### Enhancements
