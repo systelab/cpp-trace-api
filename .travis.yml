@@ -75,8 +75,8 @@ install:
   - if [[ $TRAVIS_OS_NAME == linux && $BUILD_TYPE == Coverage ]]; then sudo apt-get install lcov; fi
   - if [ $TRAVIS_OS_NAME == linux ]; then pip install conan; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew install conan; fi
-  - if [ $TRAVIS_OS_NAME == osx }; then brew install gnu-sed; fi
-  - if [ $TRAVIS_OS_NAME == osx }; then export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew install gnu-sed; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then which sed; fi
   - conan user
   - conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan
