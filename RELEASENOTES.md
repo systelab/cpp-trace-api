@@ -1,5 +1,12 @@
 # Summary of changes
 
+## Changes for version 1.3.2 (6 Feb 2021)
+
+### Bug Fixes
+
+- Adjusted Conan recipe to work with latest versions of Conan client. Set minimum client version required.
+
+
 ## Changes for version 1.3.1 (18 Oct 2020)
 
 ### Bug Fixes
