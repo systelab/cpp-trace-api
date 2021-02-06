@@ -13,6 +13,7 @@ class TraceAPIConan(ConanFile):
     options = {"boost": ["1.66.0", "1.67.0", "1.72.0"], "gtest": ["1.7.0", "1.8.1", "1.10.0"]}
     default_options = {"boost":"1.72.0", "gtest":"1.10.0"}
     exports_sources = "*"
+    required_conan_version = ">=1.33.1"
 
     def configure(self):
         self.options["boost"].shared = True
