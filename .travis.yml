@@ -4,6 +4,7 @@ matrix:
     dist: xenial
     language: python
     compiler: gcc
+    python: "3.7"
     addons:
       apt:
         sources:
@@ -23,6 +24,7 @@ matrix:
     dist: xenial
     language: python
     compiler: gcc
+    python: "3.7"
     addons:
       apt:
         sources:
@@ -42,6 +44,7 @@ matrix:
     dist: xenial
     language: python
     compiler: gcc
+    python: "3.7"
     addons:
       apt:
         sources:
@@ -60,7 +63,7 @@ matrix:
   - os: osx
     osx_image: xcode12.2
     language: cpp
-    compiler: clang   
+    compiler: clang
     env:
       - COMPILER_NAME=clang-MacOS
       - BUILD_TYPE=Release
@@ -68,6 +71,7 @@ matrix:
       - COMPILER_LIBCXX=libc++
       - GTEST_VERSION=1.8.1
       - BOOST_VERSION=1.75.0
+      - HOMEBREW_NO_AUTO_UPDATE=1
     cache:
       directories:
         - $HOME/Library/Caches/Homebrew
