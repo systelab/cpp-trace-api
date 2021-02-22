@@ -1,5 +1,12 @@
 # Summary of changes
 
+## Changes for version 1.3.3 (22 Feb 2021)
+
+### Bug Fixes
+
+- Updated continuous integration pipelines to upload generated packages to Systelab's public Artifactory.
+
+
 ## Changes for version 1.3.2 (6 Feb 2021)
 
 ### Bug Fixes
