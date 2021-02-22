@@ -2,7 +2,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/h5mevc6dpunulq13?svg=true)](https://ci.appveyor.com/project/systelab/cpp-trace-api)
 [![codecov](https://codecov.io/gh/systelab/cpp-trace-api/branch/master/graph/badge.svg)](https://codecov.io/gh/systelab/cpp-trace-api)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c39bf050b7524110ae9915238c0337d0)](https://www.codacy.com/manual/systelab/cpp-trace-api?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=systelab/cpp-trace-api&amp;utm_campaign=Badge_Grade)
-[![Download](https://api.bintray.com/packages/systelab/conan/TraceAPI:systelab/images/download.svg)](https://bintray.com/systelab/conan/TraceAPI:systelab/_latestVersion)
 
 
 # C++ Trace System
@@ -37,7 +36,7 @@ def requirements(self):
 As this package is not available on the conan-center, you will also need to configure a remote repository before installing dependencies:
 
 ```bash
-conan remote add systelab-bintray https://api.bintray.com/conan/systelab/conan 
+conan remote add systelab-public https://systelab.jfrog.io/artifactory/api/conan/cpp-conan-production-local
 ```
 
 See Conan [documentation](https://docs.conan.io/en/latest/) for further details on how to integrate this package with your build system.
