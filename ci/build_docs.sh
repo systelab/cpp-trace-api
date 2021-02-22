@@ -137,8 +137,8 @@ function queryGitHubReleaseInternalId
 
 	GITHUB_RELEASE_DATA_JSON=$(curl --silent "$GITHUB_RELEASE_URL" -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN")
 	checkErrors
-	echo "Release data JSON: $GITHUB_RELEASE_DATA_JSON"
-	
+	echo "GitHub Release data performed successfully."
+
 	GITHUB_RELEASE_INTERNAL_ID=$(echo $GITHUB_RELEASE_DATA_JSON | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 	echo "Release internal identifier is $GITHUB_RELEASE_INTERNAL_ID"
 	echo ""	
@@ -162,7 +162,6 @@ function uploadTestReportToGitHub
 	GITHUB_ASSET_UPLOAD_RESPONSE=$(curl --silent -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" -H "Content-Type: $GITHUB_ASSET_CONTENT_TYPE" --data-binary @$TEST_PROJECT_REPORT $GITHUB_ASSET_UPLOAD_URL)
 	checkErrors
 	echo "Report uploaded successfully."
-	echo "Asset upload response: $GITHUB_ASSET_UPLOAD_RESPONSE"
 
 	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE | python3 -c "import sys, json; print(json.load(sys.stdin)['url'])")
 	checkErrors
