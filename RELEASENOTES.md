@@ -5,6 +5,7 @@
 ### Bug Fixes
 
 - Updated continuous integration pipelines to upload generated packages to Systelab's public Artifactory.
+- Moved to Boost 1.75 for MacOS / clang configuration
 
 
 ## Changes for version 1.3.2 (6 Feb 2021)
