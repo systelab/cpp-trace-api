@@ -112,7 +112,7 @@ function findTestProjectConfiguration
 	if [[ -z "$TEST_PROJECT_REPORT" ]]
 	then
 		echo "Test report file for $TEST_PROJECT_NAME not found, using default (build/bin/$TEST_PROJECT_NAME.xml)"
-		TEST_PROJECT_REPORT="build/bin/"$TEST_PROJECT_NAME".xml"
+		TEST_PROJECT_REPORT="build/bin/$TEST_PROJECT_NAME.xml"
 	else
 		echo "Test report file: $TEST_PROJECT_REPORT"
 	fi
@@ -135,8 +135,11 @@ function queryGitHubReleaseInternalId
 	GITHUB_RELEASE_URL="https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/releases/tags/$TAG_NAME"
 	echo "URL: $GITHUB_RELEASE_URL"
 
-	GITHUB_RELEASE_INTERNAL_ID=$(curl --silent "$GITHUB_RELEASE_URL" | grep '"id":' | head -1 | sed -r 's/\"id\":\s*([0-9]+),/\1/' | sed -e 's/^[[:space:]]*//')
+	GITHUB_RELEASE_DATA_JSON=$(curl --silent "$GITHUB_RELEASE_URL" -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN")
 	checkErrors
+	echo "Release data JSON: $GITHUB_RELEASE_DATA_JSON"
+	
+	GITHUB_RELEASE_INTERNAL_ID=$(echo $GITHUB_RELEASE_DATA_JSON | python3 -c "import sys, json; print(json.load(sys.stdin)['id'])")
 	echo "Release internal identifier is $GITHUB_RELEASE_INTERNAL_ID"
 	echo ""	
 }
@@ -159,9 +162,9 @@ function uploadTestReportToGitHub
 	GITHUB_ASSET_UPLOAD_RESPONSE=$(curl --silent -H "Authorization: token $GITHUB_ACTION_DISPATCH_TOKEN" -H "Content-Type: $GITHUB_ASSET_CONTENT_TYPE" --data-binary @$TEST_PROJECT_REPORT $GITHUB_ASSET_UPLOAD_URL)
 	checkErrors
 	echo "Report uploaded successfully."
+	echo "Asset upload response: $GITHUB_ASSET_UPLOAD_RESPONSE"
 
-	GITHUB_ASSET_UPLOAD_RESPONSE_MULTILINE=(${GITHUB_ASSET_UPLOAD_RESPONSE//,/ })
-	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE_MULTILINE | head -1 | sed -r 's/\{\"url\":\s*\"(.*)\"/\1/g')
+	TEST_PROJECT_ASSET_URL=$(echo $GITHUB_ASSET_UPLOAD_RESPONSE | python3 -c "import sys, json; print(json.load(sys.stdin)['url'])")
 	checkErrors
 	echo "Report asset URL is $TEST_PROJECT_ASSET_URL"
 	echo ""
@@ -247,7 +250,8 @@ function dispatchDocBuildsEvent
 		 "https://api.github.com/repos/$REPO_OWNER/$REPO_SLUG/dispatches" \
 		 -d "$BODY_CONTENT"
 	checkErrors
-	echo "Done.\n"
+	echo "Done."
+	echo ""
 }
 
 
