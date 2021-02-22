@@ -38,6 +38,6 @@ function parseParameters
 
 parseParameters "${@}"
 
-echo -e "\nUploading TraceAPI/$VERSION@systelab/stable to systelab-bintray...\n\n"
-conan upload "TraceAPI/$VERSION@systelab/stable" --all -r systelab-bintray --force
+echo -e "\nUploading TraceAPI/$VERSION@systelab/stable to systelab-public...\n\n"
+conan upload "TraceAPI/$VERSION@systelab/stable" --all -r systelab-public --force
 checkErrors
