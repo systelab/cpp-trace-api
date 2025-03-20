@@ -1,5 +1,12 @@
 # Summary of changes
 
+## Changes for version 1.4.0 (20 Mar 2025)
+
+### Breaking changes
+
+- Updated to visual studio 2022
+- Moved to Boost 1.85
+
 ## Changes for version 1.3.3 (22 Feb 2021)
 
 ### Bug Fixes
