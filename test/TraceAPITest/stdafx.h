@@ -6,6 +6,7 @@
 // STL
 #include <memory>
 #include <string>
+#include <fstream>
 
 // GoogleTest
 #include <gtest/gtest.h>
