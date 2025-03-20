@@ -24,8 +24,8 @@ In order to build the application on Windows for the `Release` configuration, ru
 > git clone https://github.com/systelab/cpp-trace-api
 > md build && cd build
 > conan remote add systelab-public https://systelab.jfrog.io/artifactory/api/conan/cpp-conan-production-local
-> conan install .. -s build_type=Release -s compiler.toolset=v142 -s arch=x86_64
-> cmake .. -G "Visual Studio 16 2019" -A x64
+> conan install .. -s build_type=Release -s compiler.toolset=v143 -s arch=x86_64
+> cmake .. -G "Visual Studio 17 2022" -A x64
 > "$VSINSTALLPATH/devenv.com" TraceAPI.sln /build "Release" /PROJECT "TraceAPI"
 ```
 
@@ -35,8 +35,8 @@ However, if you want to `Debug` the source code, you will need these commands:
 > git clone https://github.com/systelab/cpp-trace-api
 > md build && cd build
 > conan remote add systelab-public https://systelab.jfrog.io/artifactory/api/conan/cpp-conan-production-local
-> conan install .. -s build_type=Debug -s compiler.toolset=v142 -s arch=x86_64
-> cmake .. -G "Visual Studio 16 2019" -A x64
+> conan install .. -s build_type=Debug -s compiler.toolset=v143 -s arch=x86_64
+> cmake .. -G "Visual Studio 17 2022" -A x64
 > "$VSINSTALLPATH/devenv.com" TraceAPI.sln /build "Debug" /PROJECT "TraceAPI"
 ```
 
