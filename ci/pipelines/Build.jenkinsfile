@@ -2,10 +2,10 @@ def channel = "testing"
 def version = "0.0.0"
 def packageNameInterface = "TraceAPI"
 def profile = "vs2022.conanprofile"
-def archs = [ 'x86_64']
+def archs = [ 'x86', 'x86_64']
 def configs = ['Debug', 'Release']
 
-library identifier: "jenkins-pipeline-utils@1.0.10",
+library identifier: "jenkins-pipeline-utils@1.0.11",
  		retriever: modernSCM([
  			$class: "GitSCMSource",
  			remote: "https://bitbucket.org/Systelab/jenkins-pipeline-utils.git",
