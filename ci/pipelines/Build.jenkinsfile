@@ -71,32 +71,11 @@ pipeline
 						{ config ->
 							stage("Build ${config}|${arch}")
 							{
-								def buildFolder = "build/${config}-${arch}"
-								bat script: "conan install . --output-folder ${buildFolder} --profile:all ${profile} --settings:all arch=${arch} --settings:all build_type=${config}", label: 'Installing dependencies'
-								bat script: "conan build . --output-folder ${buildFolder} --profile:all ${profile} --settings:all arch=${arch} --settings:all build_type=${config}", label: 'Building'					
-								bat script: "conan export-pkg . --name ${packageNameInterface} --version ${version} --profile:all ${profile} --settings:all arch=${arch} --settings:all build_type=${config} --output-folder ${buildFolder}", label: "Exporting package ${packageNameInterface}/${version}"
-								dir("${buildFolder}/bin/${config}/")
+								withEnv(["GTEST_OUTPUT=xml:${env.WORKSPACE}\\build\\TraceAPITest-${config}-${arch}.xml"])
 								{
-									bat "TraceAPITest.exe --gtest_output=xml:TraceAPITest.xml"
+									bat script: "conan create . --version ${version} --profile:all ${profile} --settings:all arch=${arch} --settings:all build_type=${config}", label: "Creating package ${packageNameInterface}/${version}"
 								}
 							}
-						}
-					}
-				}
-			}
-		}
-		
-		stage('Test Packages')
-		{
-			steps
-			{
-				script
-				{
-					archs.each
-					{ arch ->
-						configs.each
-						{ config ->
-							bat script: "conan test test_package/conanfile.py ${packageNameInterface}/${version} --profile:all ${profile} --settings:all arch=${arch} --settings:all build_type=${config}"
 						}
 					}
 				}
@@ -123,7 +102,7 @@ pipeline
 		{
 			always
 			{
-				junit allowEmptyResults: true, testResults: "build*/TraceAPITest.xml"
+				junit allowEmptyResults: true, testResults: "build/TraceAPITest-*.xml"
 				script
 				{
 					currentBuild.description = "${version}"
