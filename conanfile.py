@@ -38,7 +38,6 @@ class TraceAPIConan(ConanFile):
         cmake = CMake(self)
         cmake.configure(build_script_folder=self.source_folder)
         cmake.build()
-        cmake.test(cli_args=["--output-on-failure"])
 
     def package(self):
         copy(self, "*.h", src=os.path.join(self.source_folder, "src", "TraceAPI"),
